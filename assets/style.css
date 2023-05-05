@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+/* General styles */
+body {
+    font-family: 'Jost', sans-serif;
+    background-color: whitesmoke;
+    margin: 2em 4em 2em 4em;
+}
+
+.appear {
+    position: relative;
+    animation: appear 1s ease-in-out;
+}
+
+.panel {
+    background-color: rgb(225, 225, 225);
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+.separator {
+    margin: 5rem 0 5rem 0;
+}
+
+.alignRight {
+    text-align: right;
+}
+
+/* Header */
+.header {
+    margin-bottom: 2rem;
+}
+
+.headerElement {
+    display: inline;
+    justify-content: left;
+}
+
+#username {
+    color:black;
+    text-decoration: none;
+}
+
+#username:hover {
+    color: #0095ff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#profilePic {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 100%;
+    margin-left: 1rem;
+}
+
+
+/* Posture quality */
+#dateText {
+    font-size: 2rem;
+}
+
+#postureText {
+    font-size: 5rem;
+    color:forestgreen;
+    font-weight: 900;
+}
+
+#percentageText {
+    color: forestgreen;
+    font-size: 1.5rem;
+}
+
+#tipText {
+    font-size: 1.3rem;
+    width: 40%;
+}
+
+/* Alert panel */
+#alertsTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #F24726;
+}
+
+#alertsBody {
+    font-size: 1.3rem;
+    margin-left: 1em;
+}
+
+/* Tabs */
+.tab {
+    border-radius: 1rem 1rem 0 0 !important;
+    border: transparent !important;
+    background-color: rgb(225, 225, 225) !important;
+    font-size: 1.3em;
+    text-decoration: none;
+}
+
+.tab--selected {
+    border-top: 0.2rem solid #0095ff !important;
+    background-color: rgb(240, 240, 240) !important;
+    text-decoration: underline;
+}
+
+/* Graphs */
+#panelGraph {
+    background-color: rgb(240, 240, 240);
+    border-radius: 0 0 1rem 1rem;
+    padding: 1rem;
+    min-height: 30rem;
+}
+
+/* Animations */
+@keyframes appear {
+    0% {
+        opacity: 0;
+        top: 1rem;
+    }
+    100% {
+        opacity: 1;
+        top: 0;
+    }
+}
