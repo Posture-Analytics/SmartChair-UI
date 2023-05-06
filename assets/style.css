@@ -26,6 +26,20 @@ body {
     text-align: right;
 }
 
+button {
+    border-radius: 1rem;
+    border: rgb(28, 28, 28) solid 0.1rem;
+    background-color: white;
+    color: rgb(28, 28, 28);
+    padding: 0.5rem;
+    margin: 0.3rem;
+    min-width: 200px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+
+
 /* Header */
 .header {
     margin-bottom: 2rem;
