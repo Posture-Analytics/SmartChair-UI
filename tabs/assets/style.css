@@ -38,8 +38,6 @@ button {
     transition: 0.2s;
 }
 
-
-
 /* Header */
 .header {
     margin-bottom: 2rem;
@@ -68,6 +66,29 @@ button {
     margin-left: 1rem;
 }
 
+/* Posture Monitor */
+.monitorPanel {
+    margin: 2rem 0 2rem 0;
+    display: flex;
+    justify-content: center;
+    white-space: pre-wrap
+}
+
+.postureMonitorText {
+    font-size: 1.2rem;
+    font-style: italic;
+    display: inline;
+}
+
+.correct {
+    color: forestgreen;
+    text-decoration: underline;
+}
+
+.incorrect {
+    color: #F24726;
+    text-decoration: underline;
+}
 
 /* Posture quality */
 #dateText {

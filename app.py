@@ -3,18 +3,19 @@ from dash import dcc, html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 import polars as pl
+from tabs.base_app import app
 
 # external tabs
-from tabs import time_selector, general_view, analytic_data
+from tabs import time_selector, general_view, analytic_data, posture_monitoring
 
 external_stylesheets = [
     dbc.themes.BOOTSTRAP,
     "https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
 ]
 
-app = Dash(__name__, external_stylesheets=external_stylesheets, update_title=None, suppress_callback_exceptions=True)
-app.title = 'SmartChair'
-data = pl.DataFrame()
+# app = Dash(__name__, external_stylesheets=external_stylesheets, update_title=None, suppress_callback_exceptions=True)
+# app.title = 'SmartChair'
+# data = pl.DataFrame()
 
 app.layout = html.Div([
     # Header
@@ -26,6 +27,10 @@ app.layout = html.Div([
             html.A("Luís Fernando Laguardia", className="headerElement", id="username"),
             html.Img(src="https://yt3.googleusercontent.com/XzyXdpLZBe2Mci_xqo2h-UynYktaAXL4FNdoPL_jAWJn16aiHkiilmYxqaOP6AANFQno4RBn=s176-c-k-c0x00ffffff-no-rj", className="headerElement", id="profilePic"),
         ], width=3)
+    ]),
+    # Posture Monitoring Stats
+    html.Div(id="postureMonitorContainer", children=[
+        posture_monitoring.layout
     ]),
     dbc.Row([
         # Posture Evaluation
