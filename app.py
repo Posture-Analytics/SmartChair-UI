@@ -3,19 +3,15 @@ from dash import dcc, html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 import polars as pl
-from tabs.base_app import app
 
-# external tabs
-from tabs import time_selector, general_view, analytic_data, posture_monitoring
+from modules import posture_monitoring
+from modules.base_app import app
+from tabs import time_selector, general_view, analytic_data
 
 external_stylesheets = [
     dbc.themes.BOOTSTRAP,
     "https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
 ]
-
-# app = Dash(__name__, external_stylesheets=external_stylesheets, update_title=None, suppress_callback_exceptions=True)
-# app.title = 'SmartChair'
-# data = pl.DataFrame()
 
 app.layout = html.Div([
     # Header

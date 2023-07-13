@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output
 
 from datetime import date, datetime
 
-from tabs import database_manager
+from modules import database_manager
 
 layout = html.Div([
     dbc.Row(justify="evenly", children=[

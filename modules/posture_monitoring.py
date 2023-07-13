@@ -2,7 +2,7 @@ from dash import Dash
 from dash import dcc, html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
-from tabs.base_app import app, DEBUG_STATE
+from modules.base_app import app, DEBUG_STATE
 import random
 
 # Base layout
