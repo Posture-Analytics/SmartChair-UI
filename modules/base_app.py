@@ -1,7 +1,7 @@
 from dash import Dash
 import dash_bootstrap_components as dbc
 
-DEBUG_STATE = True
+DEBUG_STATE = False
 
 external_stylesheets = [
     dbc.themes.BOOTSTRAP,

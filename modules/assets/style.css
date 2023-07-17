@@ -26,6 +26,14 @@ body {
     text-align: right;
 }
 
+.alignCenter {
+    text-align: center;
+}
+
+.tabTitle {
+    text-decoration: underline;
+}
+
 button {
     border-radius: 1rem;
     border: rgb(28, 28, 28) solid 0.1rem;
@@ -108,7 +116,7 @@ button {
 
 #tipText {
     font-size: 1.3rem;
-    width: 40%;
+    width: 21.9rem;
 }
 
 /* Alert panel */
