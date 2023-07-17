@@ -121,19 +121,20 @@ app.layout = dbc.Row([
                 html.P(className="card-text", children=["The user is sitting correctly."])
             ])
         ], id="dataToBeSentCard", style={"width":"100%"}),
-    ], width=6, style={"margin":"2rem", "display":"flex", "flex-direction":"column", "align-items":"center"})], justify="center"
+    ], width=8, style={"margin":"2rem", "display":"flex", "flex-direction":"column", "align-items":"center"})], justify="center"
 )
 
 @app.callback(
     [Output("sendDataStatus", "children"),
-     Output("sendDataButton", "children")],
+     Output("sendDataButton", "children"),
+     Output("sendDataButton", "className")],
     Input("sendDataButton", "n_clicks"),
     Input("dataTypeDropdown", "value"),
     Input("sendDataInterval", "n_intervals")
 )
 def send_data_callback(n_clicks, dataType, n_intervals):
     if n_clicks is None or n_clicks % 2 == 0:
-        return "", "Send Data"
+        return "", "Send Data", "btn btn-lg btn-primary"
     else:
         # Get current time
         now = datetime.now()
@@ -144,7 +145,7 @@ def send_data_callback(n_clicks, dataType, n_intervals):
         root_ref.child(date_).child(timestamp).set(
             data_types[dataType]
         )
-        return f"Data {n_intervals} sent at {now.strftime('%H:%M:%S')}", "Stop Sending Data"
+        return f"Data {n_intervals} sent at {now.strftime('%H:%M:%S')}", "Stop Sending Data", "btn btn-lg btn-danger"
     
 
 @app.callback(
@@ -195,4 +196,4 @@ def update_data_to_be_sent_card(dataType):
             ]
 # ===== Run ===== #
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=8080)
