@@ -9,18 +9,6 @@ from modules import predictor
 from modules.z_generator import points, is_back_point, generate_z
 from modules.base_app import app
 
-# ===== Base layout ===== #
-layout = html.Div([
-    dbc.Row(justify="center", children=[
-        dbc.Col([
-            html.H2("Real Time Data", className="tabTitle"),
-            dcc.Graph(id="realTimeContourGraph"),
-            dcc.Graph(id="realTimeUnbalanceGraph"),
-            dcc.Interval(id='realTimeGraphsInterval', interval=500, n_intervals=0)
-        ], width=8, style={"textAlign": "center", "align-content": "center"}),
-    ]),
-])
-
 # ===== Helper functions ===== #
 def create_contour_graph(data) -> go.Figure:
     """
@@ -68,6 +56,18 @@ def create_unbalance_graph(data) -> go.Figure:
                     showlegend=False)
     fig.update_traces(marker_color=color_list)
     return fig
+
+# ===== Base layout ===== #
+layout = html.Div([
+    dbc.Row(justify="center", children=[
+        dbc.Col([
+            html.H2("Real Time Data", className="tabTitle"),
+            dcc.Graph(id="realTimeContourGraph"),
+            dcc.Graph(id="realTimeUnbalanceGraph"),
+            dcc.Interval(id='realTimeGraphsInterval', interval=500, n_intervals=0)
+        ], width=8, style={"textAlign": "center", "align-content": "center"}),
+    ]),
+])
 
 # ===== Callbacks ===== #
 @app.callback(Output('realTimeContourGraph', 'figure'),

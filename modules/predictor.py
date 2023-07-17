@@ -25,3 +25,9 @@ def get_current_data(named : bool = False) -> tuple[str, tuple]:
 
     return state[0], current_data_
 
+def get_last_active_day_data() -> tuple[str, pl.DataFrame]:
+    day, data = database_manager.get_last_active_day_data()
+
+    data = data.drop("index")
+    state = model.predict(data)
+    return day, state, data
