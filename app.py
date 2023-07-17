@@ -32,7 +32,7 @@ app.layout = html.Div([
     html.Div(className="separator"),
     dcc.Tabs(id="tabsSelector", children=[
         dcc.Tab(label="General View", className="tab", value="General View"),
-        dcc.Tab(label="Real Time Data", className="tab", value="Analytic Data"),
+        dcc.Tab(label="Real Time Data", className="tab", value="Real Time Data"),
         dcc.Tab(label="Time Selector", className="tab", value="Time Selector")
     ]),
     html.Div(id="panelGraph", children=[
@@ -46,7 +46,7 @@ def render_content(tab):
     match tab:
         case "General View":
             return general_view.layout
-        case "Analytic Data":
+        case "Real Time Data":
             return realtime_data.layout
         case "Time Selector":
             return time_selector.layout
