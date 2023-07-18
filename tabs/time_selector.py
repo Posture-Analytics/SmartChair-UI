@@ -242,8 +242,10 @@ layout = html.Div([
                 date=date(2023, 7, 14),
                 display_format="DD/MM/YYYY",
             ),
-            html.Button("Select", id="dateSelectorButton", className="btn btn-primary"),
+            html.Button("Select", id="dateSelectorButton", className="btn btn-light"),
             html.Div(id="dateSelectText", children="No date selected."),
+            html.Button("Download CSV", id="downloadButton", className="btn btn-lg btn-primary"),
+            dcc.Download(id="downloadData"),
             html.Br(),
             dcc.Slider(
                 id='frameSlider',
@@ -299,104 +301,104 @@ def download_csv(n_clicks):
         data.write_csv("data.csv")
         return dcc.send_file("data.csv")
 
-# slider text
-@app.callback(Output('dateDisplay', 'children'),
-                Input('frameSlider', 'value'))
-def update_date_display(frame_number):
-    return date_to_string(data[frame_number, "index"])
+# # slider text
+# @app.callback(Output('dateDisplay', 'children'),
+#                 Input('frameSlider', 'value'))
+# def update_date_display(frame_number):
+#     return date_to_string(data[frame_number, "index"])
 
-# contour plot
-@app.callback(Output('contourGraphFrame', 'figure'),
-                Input('frameSlider', 'value'))
-def update_contour_plot(frame_number):
-    z = generate_z(data[frame_number, :-1])
+# # contour plot
+# @app.callback(Output('contourGraphFrame', 'figure'),
+#                 Input('frameSlider', 'value'))
+# def update_contour_plot(frame_number):
+#     z = generate_z(data[frame_number, :-1])
 
-    fig = create_heatmaps_fig(z)
-    fig.update_layout(height=700, width=1200, title_text="Heatmap")
+#     fig = create_heatmaps_fig(z)
+#     fig.update_layout(height=700, width=1200, title_text="Heatmap")
 
-    return fig
+#     return fig
 
-# play button
-@app.callback(Output('frameSlider', 'value'),
-                Input('playButton', 'n_clicks'),
-                Input('playInterval', 'n_intervals'),
-                State('frameSlider', 'value'),
-                State('playSpeed', 'value'))
-def update_slider(n_clicks, _n_intervals, frame_number, speed):
-    # if speed is None, pause
-    if speed is None:
-        return frame_number
+# # play button
+# @app.callback(Output('frameSlider', 'value'),
+#                 Input('playButton', 'n_clicks'),
+#                 Input('playInterval', 'n_intervals'),
+#                 State('frameSlider', 'value'),
+#                 State('playSpeed', 'value'))
+# def update_slider(n_clicks, _n_intervals, frame_number, speed):
+#     # if speed is None, pause
+#     if speed is None:
+#         return frame_number
 
-    if n_clicks == 0:
-        return frame_number
-    if n_clicks % 2 != 0:  # play
-        if frame_number == len(data) - 1:  # if it's the last frame, reset
-            return 0
-        return frame_number + 1
-    return frame_number  # pause
+#     if n_clicks == 0:
+#         return frame_number
+#     if n_clicks % 2 != 0:  # play
+#         if frame_number == len(data) - 1:  # if it's the last frame, reset
+#             return 0
+#         return frame_number + 1
+#     return frame_number  # pause
     
-@app.callback(Output('playButton', 'children'),
-                Input('playButton', 'n_clicks'))
-def update_play_button(n_clicks):
-    if n_clicks % 2 == 0:
-        return 'Play'
-    return 'Pause'
+# @app.callback(Output('playButton', 'children'),
+#                 Input('playButton', 'n_clicks'))
+# def update_play_button(n_clicks):
+#     if n_clicks % 2 == 0:
+#         return 'Play'
+#     return 'Pause'
 
-# play interval
-@app.callback(Output('playInterval', 'interval'),
-                Input('playSpeed', 'value'))
-def update_play_interval(speed):
-    if speed == 0:
-        return 10_000_000
-    return 1000 / speed
+# # play interval
+# @app.callback(Output('playInterval', 'interval'),
+#                 Input('playSpeed', 'value'))
+# def update_play_interval(speed):
+#     if speed == 0:
+#         return 10_000_000
+#     return 1000 / speed
 
-# select data button
-@app.callback(Output('dateSelectorButton', 'children'),
-                Output('frameSlider', 'marks'),
-                Output('frameSlider', 'max'),
-                Output('contourGraphFrameAvg', 'figure'),
-                Output('asymmetryGraph', 'figure'),
-                Output('timeSeatedGraph', 'figure'),
-                Output('lineGraph', 'figure'),
-                Input('dateSelectorButton', 'n_clicks'),
-                State('datePicker', 'date'),
-                State('timePickerStart', 'value'),
-                State('timePickerEnd', 'value'))
-def select_data(n_clicks, date):
-    global data
-    global marks
-    global is_processed
+# # select data button
+# @app.callback(Output('dateSelectorButton', 'children'),
+#                 Output('frameSlider', 'marks'),
+#                 Output('frameSlider', 'max'),
+#                 Output('contourGraphFrameAvg', 'figure'),
+#                 Output('asymmetryGraph', 'figure'),
+#                 Output('timeSeatedGraph', 'figure'),
+#                 Output('lineGraph', 'figure'),
+#                 Input('dateSelectorButton', 'n_clicks'),
+#                 State('datePicker', 'date'),
+#                 State('timePickerStart', 'value'),
+#                 State('timePickerEnd', 'value'))
+# def select_data(n_clicks, date):
+#     global data
+#     global marks
+#     global is_processed
 
-    if n_clicks == 0:
-        return ['Select',
-                marks,
-                len(data) - 1,
-                calculate_contour_average_plot(),
-                calculate_asymmetry_plot(),
-                calculate_time_seated_plot(),
-                calculate_line_plot()]
+#     if n_clicks == 0:
+#         return ['Select',
+#                 marks,
+#                 len(data) - 1,
+#                 calculate_contour_average_plot(),
+#                 calculate_asymmetry_plot(),
+#                 calculate_time_seated_plot(),
+#                 calculate_line_plot()]
 
-    data = database_manager.get_data_from_day(date)
-    is_processed = False
-    marks = calculate_marks(data)
+#     data = database_manager.get_data_from_day(date)
+#     is_processed = False
+#     marks = calculate_marks(data)
 
-    print('data downloaded')
+#     print('data downloaded')
 
-    if len(data) == 0:
-        return ['No data selected',
-                None,
-                0,
-                None,
-                None,
-                None,
-                None]
+#     if len(data) == 0:
+#         return ['No data selected',
+#                 None,
+#                 0,
+#                 None,
+#                 None,
+#                 None,
+#                 None]
     
-    print('marks', marks)
+#     print('marks', marks)
 
-    return [f'{len(data)} frames selected',
-            marks,
-            len(data) - 1,
-            calculate_contour_average_plot(),
-            calculate_asymmetry_plot(),
-            calculate_time_seated_plot(),
-            calculate_line_plot()]
+#     return [f'{len(data)} frames selected',
+#             marks,
+#             len(data) - 1,
+#             calculate_contour_average_plot(),
+#             calculate_asymmetry_plot(),
+#             calculate_time_seated_plot(),
+#             calculate_line_plot()]

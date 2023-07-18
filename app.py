@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output
 import polars as pl
 
 from modules import posture_monitoring, day_analisys
-from modules.base_app import app
+from modules.base_app import app, DEBUG_STATE
 from tabs import realtime_data, time_selector, general_view
 
 external_stylesheets = [

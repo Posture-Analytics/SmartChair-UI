@@ -28,6 +28,8 @@ def get_current_data(named : bool = False) -> tuple[str, tuple]:
 def get_last_active_day_data() -> tuple[str, pl.DataFrame]:
     day, data = database_manager.get_last_active_day_data()
 
+    data_ = data
     data = data.drop("index")
+    data = data.rows(named=False)
     state = model.predict(data)
-    return day, state, data
+    return day, state, data_
