@@ -6,8 +6,8 @@ from modules import predictor
 
 # ===== Base layout ===== #
 layout = html.Div(className="panel monitorPanel", children=[
-    html.Div(["Você está usando a cadeira e sentado "], className="postureMonitorText"),
-    html.Div(["corretamente"], className="postureMonitorText correct"),
+    html.Div(["You are using the chair and sitting "], className="postureMonitorText"),
+    html.Div(["correctly"], className="postureMonitorText correct"),
     html.Div(["."], className="postureMonitorText"),
     dcc.Interval(id='postureMonitorInterval', interval=500, n_intervals=0)
 ])
@@ -20,29 +20,29 @@ def update_posture_monitor(n):
     match state:
         case 'Sitting Correctly':
             return html.Div(className="panel monitorPanel", children=[
-                html.Div(["Você está usando a cadeira e sentado "], className="postureMonitorText"),
-                html.Div(["corretamente"], className="postureMonitorText correct"),
+                html.Div(["You are using the chair and sitting "], className="postureMonitorText"),
+                html.Div(["correctly"], className="postureMonitorText correct"),
                 html.Div(["."], className="postureMonitorText"),
                 dcc.Interval(id='postureMonitorInterval', interval=1000, n_intervals=0)
             ])
         case 'Leaning Forward':
             return html.Div(className="panel monitorPanel", children=[
-                html.Div(["Você está usando a cadeira e sentado "], className="postureMonitorText"),
-                html.Div(["curvado para frente"], className="postureMonitorText incorrect"),
+                html.Div(["You are using the chair and sitting "], className="postureMonitorText"),
+                html.Div(["leaning forward"], className="postureMonitorText incorrect"),
                 html.Div(["."], className="postureMonitorText"),
                 dcc.Interval(id='postureMonitorInterval', interval=1000, n_intervals=0)
             ])
         case 'Leaning Backward':
             return html.Div(className="panel monitorPanel", children=[
-                html.Div(["Você está usando a cadeira e sentado "], className="postureMonitorText"),
-                html.Div(["curvado para trás"], className="postureMonitorText incorrect"),
+                html.Div(["You are using the chair and sitting "], className="postureMonitorText"),
+                html.Div(["leaning backwards"], className="postureMonitorText incorrect"),
                 html.Div(["."], className="postureMonitorText"),
                 dcc.Interval(id='postureMonitorInterval', interval=1000, n_intervals=0)
             ])
         case 'Unbalanced':
             return html.Div(className="panel monitorPanel", children=[
-                html.Div(["Você está usando a cadeira e sentado "], className="postureMonitorText"),
-                html.Div(["de maneira desbalanceada"], className="postureMonitorText incorrect"),
+                html.Div(["You are using the chair and sitting "], className="postureMonitorText"),
+                html.Div(["in an unbalanced way"], className="postureMonitorText incorrect"),
                 html.Div(["."], className="postureMonitorText"),
                 dcc.Interval(id='postureMonitorInterval', interval=1000, n_intervals=0)
             ])

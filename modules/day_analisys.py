@@ -13,29 +13,36 @@ model = predictor.get_model()
 layout = dbc.Row([
         # Posture Evaluation
         dbc.Col([
-            dcc.Markdown("No dia **26/04**, a sua postura foi:", id="dateText"),
-            html.Div("Boa.", className="appear", id="postureText"),
-            html.Div("Ou 74% correta.", className="appear", id="percentageText"),
-            html.Div("Dica: Levantar-se a cada 50 minutos melhora a circulação sanguínea nos membros inferiores.", className="appear", id="tipText"),
+            dcc.Markdown("At day **26/04**, your posture was:", id="dateText"),
+            html.Div("Good.", className="appear", id="postureText"),
+            html.Div("Or 74% correct.", className="appear", id="percentageText"),
+            dbc.Row([
+                dbc.Col(["Tip: Standing up every 50 minutes improves blood circulation in the lower limbs."],
+                        className="appear", width=8)
+            ]),
         ], width=8),
         # Alerts
         dbc.Col(class_name="panel", children=[
-            html.Div("⚠ Alertas:", className="appear", id="alertsTitle"),
-            dcc.Markdown("Você passou mais de **2 horas sentado** sem se levantar.", className="appear", id="alertsBody"),
+            html.Div("⚠ Alerts:", className="appear", id="alertsTitle"),
+            dcc.Markdown("You stayed seated for more than **2 hours**.", className="appear", id="alertsBody"),
         ]),
     ])
 
 def make_layout(day, posture_quality, percent, tip, alerts):
     # Alerts
-    alerts_list = [html.Div("⚠ Alertas:", className="appear", id="alertsTitle")]
+    alerts_list = [html.Div("⚠ Alerts:", className="appear", id="alertsTitle")]
     for alert in alerts:
         alerts_list.append(dcc.Markdown(alert, className="appear", id="alertsBody"))
+    if len(alerts_list) == 1:
+        alerts_list.append(dcc.Markdown("*No alerts.*", className="appear", id="alertsBody"))
     return dbc.Row([
         dbc.Col([
-            dcc.Markdown(f"No dia **{day}**, a sua postura foi:", id="dateText"),
+            dcc.Markdown(f"At day **{day}**, your posture was:", id="dateText"),
             html.Div(posture_quality, className="appear", id="postureText"),
-            html.Div(f"Ou {percent}% correta.", className="appear", id="percentageText"),
-            html.Div(tip, className="appear", id="tipText"),
+            html.Div(f"Or {percent}% correct.", className="appear", id="percentageText"),
+            dbc.Row([
+                dbc.Col(tip, className="appear", width=8)
+            ]),
         ], width=8),
         dbc.Col(class_name="panel", children=alerts_list),
     ])
@@ -50,20 +57,20 @@ def get_layout():
     evaluated_postures = pd.Series(evaluated_postures)
     percent = int(evaluated_postures.value_counts(normalize=True)["Sitting Correctly"] * 100)
     if percent < 50:
-        posture_quality = "Ruim."
-        tip = "Dica: Levantar-se a cada 50 minutos melhora a circulação sanguínea nos membros inferiores."
+        posture_quality = "Bad."
+        tip = "Tip: Standing up every 50 minutes improves blood circulation in the lower limbs."
     elif percent < 65:
-        posture_quality = "Razoável."
-        tip = "Dica: Levantar-se a cada 50 minutos melhora a circulação sanguínea nos membros inferiores."
+        posture_quality = "Regular."
+        tip = "Tip: Standing up every 50 minutes improves blood circulation in the lower limbs."
     elif percent < 80:
-        posture_quality = "Boa."
-        tip = "Dica: Levantar-se a cada 50 minutos melhora a circulação sanguínea nos membros inferiores."
+        posture_quality = "Good."
+        tip = "Tip: Standing up every 50 minutes improves blood circulation in the lower limbs."
     elif percent < 95:
-        posture_quality = "Ótima."
-        tip = "Dica: Levantar-se a cada 50 minutos melhora a circulação sanguínea nos membros inferiores."
+        posture_quality = "Great."
+        tip = "Tip: Standing up every 50 minutes improves blood circulation in the lower limbs."
     else:
-        posture_quality = "Perfeita."
-        tip = "Parabéns! Você está se sentando corretamente."
+        posture_quality = "Perfect."
+        tip = "Congratulations! You are sitting correctly."
     alerts = []
 
     return make_layout(day, posture_quality, percent, tip, alerts)
