@@ -1,0 +1,21 @@
+body {
+    font-family: 'Readex Pro', sans-serif;
+    display: flex;
+    justify-content: center;
+}
+
+input {
+    display: block;
+    margin: 0.2rem;
+    padding: 0.5rem;
+    height: 2rem;
+    width: 20rem;
+}
+
+progress {
+    display: block;
+    margin: 0.2rem;
+    padding: 0.5rem;
+    height: 2rem;
+    width: 20rem;
+}
