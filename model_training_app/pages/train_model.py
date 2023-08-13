@@ -32,15 +32,18 @@ def update_progress(n_intervals, progress):
     if int(progress) >= 5000:
         return False, progress, "Done!", "Get up before going to the next pose."
     
-    global started
-    
-    if not started:
-        started = random.random() > 0.95
-
-    if not started:
-        return True, progress, "Stay in this pose for 5 seconds...", "You can start as soon as you're ready. The timer will start automatically when it detects you're sitting."
+    # dummy code to simulate the chair detecting the user
+    if progress == '0':
+        reading = login_manager.get_last_reading(chance=0.99)
     else:
-        return True, str(int(progress) + 20), f"Stay in this pose for {5 - (n_intervals // 100)} seconds...", ""
+        reading = login_manager.get_last_reading(chance=0.01)
+
+    if reading is None and progress == '0':
+        return True, progress, "Stay in this pose for 5 seconds...", "You can start as soon as you're ready. The timer will start automatically when it detects you're sitting."
+    elif reading is None:
+        return True, progress, "Stay in this pose for 5 seconds...", "The chair cannot detect you. Please sit down as shown in the picture."
+    else:
+        return True, str(int(progress) + 20), f"Stay in this pose for {5 - (int(progress) // 1000)} seconds...", ""
 
 @dash.callback(
     Output("next-button", "disabled"),
@@ -53,12 +56,13 @@ def update_progress(n_intervals, progress):
     prevent_initial_call=True,
 )
 def next_pose(n_clicks):
-    global started
-    
+
     if n_clicks is None:
         return True, '0', "Stay in this pose for 5 seconds...", "Pose 1 out of 12", 0, ""
     else:
-        started = False
+        if n_clicks == 12:
+            return True, '0', "", "Done!", 0, "You're done! You can now go back to the home page."
+
         return (True, 
                 '0', 
                 "Stay in this pose for 5 seconds...", 

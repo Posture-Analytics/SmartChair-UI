@@ -2,6 +2,7 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 from firebase_admin import auth
+import random
 
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin = firebase_admin.initialize_app(cred, {'databaseURL': 'https://friendly-bazaar-334818-default-rtdb.firebaseio.com'})
@@ -54,3 +55,10 @@ def register(email, password, data):
         print(e)
         return False
     return True
+
+def get_last_reading(chance=0.1):
+    """
+    Gets the last reading from the database.
+    Dummy function for now.
+    """
+    return True if random.random() > chance else None

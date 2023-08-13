@@ -7,7 +7,7 @@ external_stylesheets = [
     "https://fonts.googleapis.com/css2?family=Readex+Pro&display=swap"
 ]
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets, use_pages=True)
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets, use_pages=True, update_title=None)
 app.title = 'SmartChair'
 
 app.layout = html.Div([
