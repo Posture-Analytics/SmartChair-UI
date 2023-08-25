@@ -12,84 +12,19 @@ from datetime import datetime, timedelta, date, time
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin = firebase_admin.initialize_app(cred, {'databaseURL': 'https://friendly-bazaar-334818-default-rtdb.firebaseio.com'})
 
-root_ref = db.reference('/sensor_readings/')
+root_ref = db.reference('/sensor_readings_NEW_STRUCTURE/')
 
 # ===== Data Types ===== #
 data_types = {
-    "correct_posture": {
-        "p00": 1500,
-        "p01": 1500,
-        "p02": 1500,
-        "p03": 1500,
-        "p04": 1500,
-        "p05": 1500,
-        "p06": 1500,
-        "p07": 1500,
-        "p08": 1500,
-        "p09": 1500,
-        "p10": 1500,
-        "p11": 1500
-    },
-    "leaning_forward": {
-        "p00": 0,
-        "p01": 0,
-        "p02": 0,
-        "p03": 0,
-        "p04": 0,
-        "p05": 0,
-        "p06": 3000,
-        "p07": 3000,
-        "p08": 3000,
-        "p09": 3000,
-        "p10": 3000,
-        "p11": 3000
-    },
-    "relaxed_posture": {
-        "p00": 3000,
-        "p01": 3000,
-        "p02": 3000,
-        "p03": 3000,
-        "p04": 0,
-        "p05": 0,
-        "p06": 0,
-        "p07": 0,
-        "p08": 3000,
-        "p09": 3000,
-        "p10": 3000,
-        "p11": 3000
-    },
-    "unbalanced_posture": {
-        "p00": 3000,
-        "p01": 0,
-        "p02": 3000,
-        "p03": 0,
-        "p04": 3000,
-        "p05": 0,
-        "p06": 3000,
-        "p07": 0,
-        "p08": 3000,
-        "p09": 0,
-        "p10": 3000,
-        "p11": 0
-    },
-    "not_sitting": {
-        "p00": 0,
-        "p01": 0,
-        "p02": 0,
-        "p03": 0,
-        "p04": 0,
-        "p05": 0,
-        "p06": 0,
-        "p07": 0,
-        "p08": 0,
-        "p09": 0,
-        "p10": 0,
-        "p11": 0
-    }
+    "correct_posture": 'P1500;1500;1500;1500;1500;1500;1500;1500;1500;1500;1500;1500;',
+    "leaning_forward": 'P0;0;0;0;3000;3000;3000;3000;3000;3000;3000;3000;',
+    "relaxed_posture": 'P3000;3000;3000;3000;0;0;0;0;3000;3000;3000;3000;',
+    "unbalanced_posture": 'P3000;0;3000;0;3000;0;3000;0;3000;0;3000;0;',
+    "not_sitting": 'P0;0;0;0;0;0;0;0;0;0;0;0;'
 }
 
 # ===== App ===== #
-app = Dash(__name__, title="SmartChair - Data Sender", external_stylesheets=[dbc.themes.LITERA], update_title=None)
+app = Dash(__name__, title = "SmartChair - Data Sender", external_stylesheets=[dbc.themes.LITERA], update_title=None)
 app.layout = dbc.Row([
     dbc.Col([
         # Title
@@ -141,7 +76,7 @@ def send_data_callback(n_clicks, dataType, n_intervals):
         timestamp = datetime.timestamp(now)
         # Send data
         date_ = date.today().strftime("%Y-%m-%d")
-        timestamp = str(timestamp).replace('.', '_')[:14]
+        timestamp = str(timestamp).replace('.', '')[:13]
         root_ref.child(date_).child(timestamp).set(
             data_types[dataType]
         )

@@ -75,7 +75,7 @@ layout = html.Div([
               Input('realTimeGraphsInterval', 'n_intervals'))
 def update_real_time_graphs(n):
     state, data = predictor.get_current_data()
-
+    
     if state == "Not Sitting":
         return go.Figure(), go.Figure()
 
