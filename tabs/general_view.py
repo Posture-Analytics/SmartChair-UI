@@ -27,14 +27,125 @@ def create_time_seated_graph(state, data):
 
     return fig
 
-def create_posture_balance_graph(data):
-    return go.Figure()
+def create_posture_balance_graph(state, data):
+    fig = go.Figure()
+
+    # calculate horizontal balance
+    sum = data.sum()
+
+    right = 0
+    left = 0
+    for i in range(11):
+        if i % 2 == 0:
+            right += sum[f"p{str(i).zfill(2)}"][0]
+        else:
+            left += sum[f"p{str(i).zfill(2)}"][0]
+
+    boundary = max(right, left)
+    h_balance = (right - left) / boundary
+
+    # calculate vertical balance
+    counts = np.unique(state, return_counts=True)
+    forward = counts[1][counts[0] == 'Leaning Forward']
+    backward = counts[1][counts[0] == 'Leaning Backward']
+
+    if len(forward) == 0:
+        forward = 0
+    else:
+        forward = forward[0]
+    if len(backward) == 0:
+        backward = 0
+    else:
+        backward = backward[0]
+
+    boundary = max(forward, backward)
+    v_balance = (forward - backward) / boundary
+
+
+    # horizontal balance
+    # line
+    fig.add_shape(type="line",
+    x0=-2, y0=0, x1=2, y1=0,
+    line=dict(color="LightSlateGray",width=3)
+    )
+    # middle line
+    fig.add_shape(type="line",
+    x0= 0, y0=-MARKER_SIZE/2,
+    x1= 0, y1= MARKER_SIZE/2,
+    line=dict(color="LightSlateGray",width=3)
+    )
+    # marker
+    fig.add_shape(type="circle",
+    x0= h_balance * 2 - MARKER_SIZE/2, y0=-MARKER_SIZE/2,
+    x1= h_balance * 2 + MARKER_SIZE/2, y1= MARKER_SIZE/2,
+    fillcolor="DarkSlateGray", line_color="DarkSlateGray")
+    # text
+    fig.add_annotation(
+    x=0, y=0.5,
+    text="Horizontal Balance",
+    showarrow=False,
+    align="center"
+    )
+    # text value
+    fig.add_annotation(
+    x=0, y=-0.5,
+    text= str(round(h_balance, 2)),
+    showarrow=False,
+    align="center"
+    )
+
+    # vertical balance
+    # line
+    fig.add_shape(type="line",
+    x0=4, y0=-1, x1=4, y1=1,
+    line=dict(color="LightSlateGray",width=3)
+    )  
+    # middle line
+    fig.add_shape(type="line",
+    x0=4 - MARKER_SIZE/2, y0=0, x1=4 + MARKER_SIZE/2, y1=0,
+    line=dict(color="LightSlateGray",width=3)
+    )
+    # marker
+    fig.add_shape(type="circle",
+    x0=4 - MARKER_SIZE/2, y0= v_balance - MARKER_SIZE/2,
+    x1=4 + MARKER_SIZE/2, y1= v_balance + MARKER_SIZE/2,
+    fillcolor="DarkSlateGray", line_color="DarkSlateGray")
+    # text
+    fig.add_annotation(
+    x=4, y=1.5,
+    text="Vertical Balance",
+    showarrow=False,
+    align="center"
+    )
+    # text value
+    fig.add_annotation(
+    x=4, y=-1.5,
+    text= str(round(v_balance, 2)),
+    showarrow=False,
+    align="center"
+    )
+
+    # update layout
+    fig.update_layout(
+    title="Posture Balance",
+    xaxis_range=[-4, 8],
+    yaxis_range=[-2, 2],
+    width=800,
+    height=400,
+    template="plotly_white",
+    xaxis_showgrid=False,
+    yaxis_showgrid=False,
+    xaxis_visible=False,
+    yaxis_visible=False,
+    )
+
+    return fig
 
 def create_graphs():
     day, state, data = predictor.get_last_active_day_data()
     posture_quality_graph = create_posture_quality_graph(state)
-    posture_balance_graph = create_posture_balance_graph(data)
     time_seated_graph = create_time_seated_graph(state, data)
+    posture_balance_graph = create_posture_balance_graph(state, data)
 
     day = day.strftime("%d/%m")
     return day, posture_quality_graph, posture_balance_graph, time_seated_graph
