@@ -28,6 +28,7 @@ def create_time_seated_graph(state, data):
     return fig
 
 def create_posture_balance_graph(state, data):
+    MARKER_SIZE = 0.3
     fig = go.Figure()
 
     # calculate horizontal balance
@@ -48,6 +49,7 @@ def create_posture_balance_graph(state, data):
     counts = np.unique(state, return_counts=True)
     forward = counts[1][counts[0] == 'Leaning Forward']
     backward = counts[1][counts[0] == 'Leaning Backward']
+    neutral = counts[1][counts[0] == 'Sitting Correctly']
 
     if len(forward) == 0:
         forward = 0
@@ -57,8 +59,12 @@ def create_posture_balance_graph(state, data):
         backward = 0
     else:
         backward = backward[0]
+    if len(neutral) == 0:
+        neutral = 0
+    else:
+        neutral = neutral[0]
 
-    boundary = max(forward, backward)
+    boundary = max(forward, backward, neutral)
     v_balance = (forward - backward) / boundary
 
 
