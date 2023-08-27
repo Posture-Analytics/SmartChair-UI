@@ -67,18 +67,17 @@ def create_posture_balance_graph(state, data):
     boundary = max(forward, backward, neutral)
     v_balance = (forward - backward) / boundary
 
-
     # horizontal balance
     # line
     fig.add_shape(type="line",
     x0=-2, y0=0, x1=2, y1=0,
-    line=dict(color="LightSlateGray",width=3)
+    line=dict(color="LightSlateGray", width=3)
     )
     # middle line
     fig.add_shape(type="line",
     x0= 0, y0=-MARKER_SIZE/2,
     x1= 0, y1= MARKER_SIZE/2,
-    line=dict(color="LightSlateGray",width=3)
+    line=dict(color="LightSlateGray", width=3)
     )
     # marker
     fig.add_shape(type="circle",
