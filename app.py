@@ -1,3 +1,4 @@
+import dash
 from dash import Dash
 from dash import dcc, html
 import dash_bootstrap_components as dbc
@@ -37,7 +38,15 @@ app.layout = html.Div([
     ]),
     html.Div(id="panelGraph", children=[
         html.Div(id="tabContent")
-    ])
+    ]),
+    html.Div([
+            html.Div(
+                dcc.Link(
+                    f"{page['name']} - {page['path']}", href=page["relative_path"]
+                )
+            )
+            for page in dash.page_registry.values()
+        ]),
 ])
 
 @app.callback(Output('tabContent', 'children'),
