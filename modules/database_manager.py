@@ -74,6 +74,16 @@ def get_current_data() -> pl.DataFrame:
         else:
             return pl.DataFrame()
 
+def get_list_of_days() -> list[str]:
+    """
+    Gets the list of days that have data.
+
+    Returns
+    -------
+        A list of strings with the dates.
+    """
+    return list(root_ref.get(shallow=True).keys())
+
 def get_last_active_day_data() -> tuple[date, pl.DataFrame]:
     """
     Gets the data from the last day that has data.
@@ -83,7 +93,7 @@ def get_last_active_day_data() -> tuple[date, pl.DataFrame]:
     -------
         A tuple with the date and the DataFrame.
     """
-    days = list(root_ref.get(shallow=True).keys())
+    days = get_list_of_days()
     if len(days) == 0:
         return date.today(), pl.DataFrame()
     days.sort()

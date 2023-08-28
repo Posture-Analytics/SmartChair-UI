@@ -36,7 +36,7 @@ def create_posture_balance_graph(state, data):
 
     right = 0
     left = 0
-    for i in range(11):
+    for i in range(12):
         if i % 2 == 0:
             right += sum[f"p{str(i).zfill(2)}"][0]
         else:

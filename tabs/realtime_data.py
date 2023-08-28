@@ -5,9 +5,13 @@ import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
 import numpy as np
+import datetime
 from modules import predictor
 from modules.z_generator import points, is_back_point, generate_z
 from modules.base_app import app
+
+# ===== Variables ===== #
+data_history = {}
 
 # ===== Helper functions ===== #
 def create_contour_graph(data) -> go.Figure:
@@ -57,6 +61,50 @@ def create_unbalance_graph(data) -> go.Figure:
     fig.update_traces(marker_color=color_list)
     return fig
 
+def create_bar_graph(data) -> go.Figure:
+    """
+    Creates a bar graph with the pressure data.
+    """
+    fig = go.Figure()
+    print(data[0])
+    fig.add_trace(go.Bar(x=data.columns, y=data.row(0), name='Pressure'))
+    fig.update_layout(title_text="Pressure Data",
+                    xaxis_title="Sensor",
+                    yaxis_title="Pressure",
+                    yaxis_range=[0, 4096],
+                    showlegend=True)
+    return fig
+
+def create_line_graph(data) -> go.Figure:
+    """
+    Creates a line graph with the pressure data
+    along the time.
+    """
+    # If there's new data
+    if data.shape[0] > 0:
+        # Save the data in the history
+        if len(data_history) == 0:
+            for key in data.columns:
+                data_history[key] = []
+            data_history['time'] = []
+        for key in data.columns:
+            data_history[key].append(data[key][0])
+        data_history['time'].append(datetime.datetime.now())
+
+    # Create the figure
+    fig = go.Figure()
+    for key in data_history.keys():
+        if key != 'time':
+            fig.add_trace(go.Scatter(x=data_history['time'], y=data_history[key], name=key))
+
+    # Update the layout
+    fig.update_layout(title_text="Pressure Data",
+                    xaxis_title="Time",
+                    yaxis_title="Pressure",
+                    showlegend=True)
+    
+    return fig
+
 # ===== Base layout ===== #
 layout = html.Div([
     dbc.Row(justify="center", children=[
@@ -64,6 +112,8 @@ layout = html.Div([
             html.H2("Real Time Data", className="tabTitle"),
             dcc.Graph(id="realTimeContourGraph"),
             dcc.Graph(id="realTimeUnbalanceGraph"),
+            dcc.Graph(id="realTimeBarGraph"),
+            dcc.Graph(id="HistoryLineGraph"),
             dcc.Interval(id='realTimeGraphsInterval', interval=500, n_intervals=0)
         ], width=8, style={"textAlign": "center", "align-content": "center"}),
     ]),
@@ -72,14 +122,18 @@ layout = html.Div([
 # ===== Callbacks ===== #
 @app.callback(Output('realTimeContourGraph', 'figure'),
               Output('realTimeUnbalanceGraph', 'figure'),
+              Output('realTimeBarGraph', 'figure'),
+              Output('HistoryLineGraph', 'figure'),
               Input('realTimeGraphsInterval', 'n_intervals'))
 def update_real_time_graphs(n):
     state, data = predictor.get_current_data()
     
     if state == "Not Sitting":
-        return go.Figure(), go.Figure()
+        return go.Figure(), go.Figure(), go.Figure(), create_line_graph(data)
 
     contour_graph = create_contour_graph(data)
     unbalance_graph = create_unbalance_graph(data)
+    bar_graph = create_bar_graph(data)
+    line_graph = create_line_graph(data)
 
-    return contour_graph, unbalance_graph
+    return contour_graph, unbalance_graph, bar_graph, line_graph

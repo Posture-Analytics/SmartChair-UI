@@ -12,15 +12,15 @@ from datetime import datetime, timedelta, date, time
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin = firebase_admin.initialize_app(cred, {'databaseURL': 'https://friendly-bazaar-334818-default-rtdb.firebaseio.com'})
 
-root_ref = db.reference('/sensor_readings_NEW_STRUCTURE/')
+root_ref = db.reference('/yet_another_test/')
 
 # ===== Data Types ===== #
 data_types = {
-    "correct_posture": 'P1500;1500;1500;1500;1500;1500;1500;1500;1500;1500;1500;1500;',
-    "leaning_forward": 'P0;0;0;0;3000;3000;3000;3000;3000;3000;3000;3000;',
-    "relaxed_posture": 'P3000;3000;3000;3000;0;0;0;0;3000;3000;3000;3000;',
-    "unbalanced_posture": 'P3000;0;3000;0;3000;0;3000;0;3000;0;3000;0;',
-    "not_sitting": 'P0;0;0;0;0;0;0;0;0;0;0;0;'
+    "correct_posture": [1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500],
+    "leaning_forward": [0, 0, 0, 0, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000],
+    "relaxed_posture": [3000, 3000, 3000, 3000, 0, 0, 0, 0, 3000, 3000, 3000, 3000],
+    "unbalanced_posture": [3000, 0, 3000, 0, 3000, 0, 3000, 0, 3000, 0, 3000, 0],
+    "not_sitting": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 }
 
 # ===== App ===== #
@@ -81,7 +81,6 @@ def send_data_callback(n_clicks, dataType, n_intervals):
             data_types[dataType]
         )
         return f"Data {n_intervals} sent at {now.strftime('%H:%M:%S')}", "Stop Sending Data", "btn btn-lg btn-danger"
-    
 
 @app.callback(
     Output("dataToBeSentCard", "children"),

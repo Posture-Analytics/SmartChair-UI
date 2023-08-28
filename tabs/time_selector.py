@@ -1,5 +1,5 @@
 from dash import Dash
-from dash import dcc, html
+from dash import dcc, html, ALL
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
@@ -235,11 +235,20 @@ layout = html.Div([
     dbc.Row(justify="center", children=[
         dbc.Col([
             html.H2("Time Selector", className="tabTitle"),
+            html.Br(),
+            html.H3("Select a date", className="tabSubtitle"),
+            html.P("List of dates with data:", className="tabText"),
+            dcc.Dropdown(	
+                id="datePicker",
+                options=[{"label": day, "value": day} for day in database_manager.get_list_of_days()],
+                clearable=False,
+                className="dropdown"
+            ),
+            html.Br(),
             dcc.DatePickerSingle(
                 id='dateSelector',
                 min_date_allowed=date(2022, 1, 1),
                 max_date_allowed=date(2023, 12, 31),
-                date=date(2023, 7, 14),
                 display_format="DD/MM/YYYY",
             ),
             html.Button("Select", id="dateSelectorButton", className="btn btn-light"),
@@ -295,11 +304,17 @@ def update_date_text(date, n_clicks):
 @app.callback(Output("downloadData", "data"),
                 Input("downloadButton", "n_clicks"))
 def download_csv(n_clicks):
+
     if n_clicks is not None:
         global data
 
         data.write_csv("data.csv")
         return dcc.send_file("data.csv")
+
+@app.callback(Output("dateSelector", "date"),
+            Input("datePicker", "value"))
+def update_date_picker(value):
+    return value
 
 # # slider text
 # @app.callback(Output('dateDisplay', 'children'),
