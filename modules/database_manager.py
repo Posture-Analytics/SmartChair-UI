@@ -68,10 +68,12 @@ def get_current_data() -> pl.DataFrame:
         today_data = today_data.sort("index").reverse()
         current_time = datetime.now()
         # the sensors take around 500ms to send the data, so 1 second is a safe threshold
-        threshold = timedelta(seconds=1)
+        threshold = timedelta(seconds=2)
         if current_time - today_data["index"][0] < threshold:
+            print(today_data.head(1))
             return today_data.head(1)
         else:
+            print("empty")
             return pl.DataFrame()
 
 def get_list_of_days() -> list[str]:

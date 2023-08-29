@@ -101,6 +101,7 @@ def create_line_graph(data) -> go.Figure:
     fig.update_layout(title_text="Pressure Data",
                     xaxis_title="Time",
                     yaxis_title="Pressure",
+                    hovermode="x unified",
                     showlegend=True)
     
     return fig

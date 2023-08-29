@@ -55,22 +55,27 @@ def get_layout():
     last_day_data = last_day_data.drop("index")
     evaluated_postures = model.predict(last_day_data.rows(named=False))
     evaluated_postures = pd.Series(evaluated_postures)
-    percent = int(evaluated_postures.value_counts(normalize=True)["Sitting Correctly"] * 100)
-    if percent < 50:
-        posture_quality = "Bad."
+    try:
+        percent = int(evaluated_postures.value_counts(normalize=True)["Sitting Correctly"] * 100)
+        if percent < 50:
+            posture_quality = "Bad."
+            tip = "Tip: Standing up every 50 minutes improves blood circulation in the lower limbs."
+        elif percent < 65:
+            posture_quality = "Regular."
+            tip = "Tip: Standing up every 50 minutes improves blood circulation in the lower limbs."
+        elif percent < 80:
+            posture_quality = "Good."
+            tip = "Tip: Standing up every 50 minutes improves blood circulation in the lower limbs."
+        elif percent < 95:
+            posture_quality = "Great."
+            tip = "Tip: Standing up every 50 minutes improves blood circulation in the lower limbs."
+        else:
+            posture_quality = "Perfect."
+            tip = "Congratulations! You are sitting correctly."
+    except:
+        posture_quality = "Unexpected data."
+        percent = 0
         tip = "Tip: Standing up every 50 minutes improves blood circulation in the lower limbs."
-    elif percent < 65:
-        posture_quality = "Regular."
-        tip = "Tip: Standing up every 50 minutes improves blood circulation in the lower limbs."
-    elif percent < 80:
-        posture_quality = "Good."
-        tip = "Tip: Standing up every 50 minutes improves blood circulation in the lower limbs."
-    elif percent < 95:
-        posture_quality = "Great."
-        tip = "Tip: Standing up every 50 minutes improves blood circulation in the lower limbs."
-    else:
-        posture_quality = "Perfect."
-        tip = "Congratulations! You are sitting correctly."
     alerts = []
 
     return make_layout(day, posture_quality, percent, tip, alerts)
