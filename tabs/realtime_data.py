@@ -66,7 +66,6 @@ def create_bar_graph(data) -> go.Figure:
     Creates a bar graph with the pressure data.
     """
     fig = go.Figure()
-    print(data[0])
     fig.add_trace(go.Bar(x=data.columns, y=data.row(0), name='Pressure'))
     fig.update_layout(title_text="Pressure Data",
                     xaxis_title="Sensor",
@@ -129,7 +128,7 @@ layout = html.Div([
 def update_real_time_graphs(n):
     state, data = predictor.get_current_data()
     
-    if state == "Not Sitting":
+    if data.shape[0] == 0:
         return go.Figure(), go.Figure(), go.Figure(), create_line_graph(data)
 
     contour_graph = create_contour_graph(data)
