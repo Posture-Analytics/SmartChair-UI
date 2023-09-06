@@ -8,7 +8,8 @@ from plotly.subplots import make_subplots
 import polars as pl
 import numpy as np
 
-from datetime import date, datetime
+import datetime
+from datetime import date
 
 from modules.base_app import app, DEBUG_STATE
 from modules import database_manager
@@ -20,7 +21,7 @@ marks = None
 is_processed = False
 
 # ===== Helper functions ===== #
-def date_to_string(date: datetime) -> str:
+def date_to_string(date: datetime.datetime) -> str:
     """
     Converts a datetime to a string.
     """
@@ -256,6 +257,12 @@ layout = html.Div([
             html.Button("Download CSV", id="downloadButton", className="btn btn-lg btn-primary"),
             dcc.Download(id="downloadData"),
             html.Br(),
+
+            # Fast data visualzization Graphs
+            dcc.Graph(id='lineGraph'),
+            dcc.Graph(id='timeSeatedGraph'),
+
+            html.Br(),
             dcc.Slider(
                 id='frameSlider',
                 min=0,
@@ -281,14 +288,14 @@ layout = html.Div([
             html.H2("Summary Plots"),
             dcc.Graph(id='contourGraphAvg'),
             dcc.Graph(id='asymmetryGraph'),
-            dcc.Graph(id='timeSeatedGraph'),
-            dcc.Graph(id='lineGraph'),
         ], width=8, style={"textAlign": "center", "align-content": "center"}),
     ]),
 ])
 
 # ===== Callbacks ===== #
 @app.callback(Output("dateSelectText", "children"),
+            Output("timeSeatedGraph", "figure"),
+            Output("lineGraph", "figure"),
             State("dateSelector", "date"),
             Input("dateSelectorButton", "n_clicks"))
 def update_date_text(date, n_clicks):
@@ -297,9 +304,9 @@ def update_date_text(date, n_clicks):
 
         data = database_manager.get_data_from_day(date)
         if date is not None:
-            return f"{data.shape[0]} rows selected."
+            return f"{data.shape[0]} rows selected.", calculate_time_seated_plot(), calculate_line_plot()
         else:
-            return "No date selected."
+            return "No date selected.", None, None
 
 @app.callback(Output("downloadData", "data"),
                 Input("downloadButton", "n_clicks"))
