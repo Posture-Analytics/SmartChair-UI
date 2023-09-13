@@ -2,10 +2,14 @@ import database_manager
 import polars as pl
 import pickle
 import random
+from sklearn.ensemble import RandomForestClassifier
 
 # ===== Load model ===== #
 with open("model.pkl", "rb") as f:
     model = pickle.load(f)
+
+# Debug model
+model = RandomForestClassifier()
 
 # ===== Helper functions ===== #
 def get_model():

@@ -5,7 +5,7 @@ import polars as pl
 
 dash.register_page(__name__, path='/train-model')
 
-seconds = 2
+seconds = 5
 interval = 1000
 data = pl.DataFrame()
 labels = pl.Series()
