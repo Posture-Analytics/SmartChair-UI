@@ -5,7 +5,7 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 import polars as pl
 
-from modules import posture_monitoring, day_analisys
+from modules import day_analysis, posture_monitoring
 from modules.base_app import app, DEBUG_STATE
 from tabs import realtime_data, time_selector, general_view
 
@@ -29,7 +29,7 @@ app.layout = html.Div([
     html.Div(id="postureMonitorContainer", children=[
         posture_monitoring.layout
     ]),
-    day_analisys.get_layout(),
+    day_analysis.get_layout(),
     html.Div(className="separator"),
     dcc.Tabs(id="tabsSelector", children=[
         dcc.Tab(label="General View", className="tab", value="General View"),
