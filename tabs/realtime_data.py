@@ -10,6 +10,9 @@ from modules import predictor
 from modules.z_generator import points, is_back_point, generate_z
 from modules.base_app import app
 
+# ===== Low RAM mode ===== #
+LOWRAM = False
+
 # ===== Variables ===== #
 data_history = {}
 
@@ -42,7 +45,9 @@ def create_unbalance_graph(data) -> go.Figure:
     """
     Quantifies how assymetric the seat and backrest are.
     """
-
+    if LOWRAM:
+        return None
+    
     asymmetry_data = {
         'F - seat top': data['p10'][0] - data['p11'][0],
         'E - seat top-mid': data['p08'][0] - data['p09'][0],
@@ -65,6 +70,9 @@ def create_bar_graph(data) -> go.Figure:
     """
     Creates a bar graph with the pressure data.
     """
+    if LOWRAM:
+        return None
+
     fig = go.Figure()
     fig.add_trace(go.Bar(x=data.columns, y=data.row(0), name='Pressure'))
     fig.update_layout(title_text="Pressure Data",
@@ -79,6 +87,9 @@ def create_line_graph(data) -> go.Figure:
     Creates a line graph with the pressure data
     along the time.
     """
+    if LOWRAM:
+        return None
+    
     # If there's new data
     if data.shape[0] > 0:
         # Save the data in the history
