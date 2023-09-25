@@ -1,12 +1,11 @@
 import dash
-from dash import Dash
-from dash import dcc, html
 import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output
-import polars as pl
 
-from modules import posture_monitoring, day_analisys
+from dash import dcc, html
+from dash.dependencies import Input, Output
+
 from modules.base_app import app, DEBUG_STATE
+from modules import day_analysis, posture_monitoring
 from tabs import realtime_data, time_selector, general_view
 
 external_stylesheets = [
@@ -29,7 +28,7 @@ app.layout = html.Div([
     html.Div(id="postureMonitorContainer", children=[
         posture_monitoring.layout
     ]),
-    day_analisys.get_layout(),
+    day_analysis.get_layout(),
     html.Div(className="separator"),
     dcc.Tabs(id="tabsSelector", children=[
         dcc.Tab(label="General View", className="tab", value="General View"),
@@ -49,9 +48,9 @@ app.layout = html.Div([
         ]),
 ])
 
-@app.callback(Output('tabContent', 'children'),
-              Input('tabsSelector', 'value'))
-def render_content(tab):
+@app.callback(Output("tabContent", "children"),
+              Input("tabsSelector", "value"))
+def render_content(tab: str):
     match tab:
         case "General View":
             return general_view.layout
@@ -59,6 +58,7 @@ def render_content(tab):
             return realtime_data.layout
         case "Time Selector":
             return time_selector.layout
+    raise RuntimeError(f"Invalid tab {tab!r} selected")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run_server(debug=True, port=8000)

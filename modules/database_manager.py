@@ -1,30 +1,37 @@
 import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import db
-from datetime import datetime, timedelta, date, time
 import polars as pl
 
+from datetime import datetime, timedelta, date, time
+from firebase_admin import credentials
+from firebase_admin import db
+
 cred = credentials.Certificate("serviceAccountKey.json")
-firebase_admin = firebase_admin.initialize_app(cred, {'databaseURL': 'https://friendly-bazaar-334818-default-rtdb.firebaseio.com'})
+firebase_admin = firebase_admin.initialize_app(
+    cred, options={
+        "databaseURL": "https://friendly-bazaar-334818-default-rtdb.firebaseio.com"
+    }
+)
 
-root_ref = db.reference('/yet_another_test/')
+root_ref = db.reference("/yet_another_test/")
 
-def ord_dict_to_df(data: dict) -> pl.DataFrame:
+def ordered_dict_to_df(data: dict) -> pl.DataFrame:
     """
     Converts a dictionary of dictionaries to a DataFrame.
 
     Parameters
     ----------
-        data : dict
-            The dictionary of dictionaries.
+    data : dict
+        The dictionary of dictionaries.
+
     Returns
     -------
-        A DataFrame.
+    polars.DataFrame
     """
-    # convert the keys to datetime objects
+    # Convert the integer keys to the unix time (seconds), then datetime objects
     index = [datetime.fromtimestamp(float(key) / 1000) for key in data.keys()]
-    # convert the data to a DataFrame, but it doesn't accept the dtype int in the constructor, for some reason
-    schema = {f'p{i:02}': pl.Int32 for i in range(12)}
+    # It doesn't accept the dtype int in the constructor, for some reason
+    schema = {f"p{i:02}": pl.Int32 for i in range(12)}
+    # Convert the data to a DataFrame
     result = pl.DataFrame(list(data.values()), schema=schema).with_columns([
         pl.Series(name="index", values=index),
     ])
@@ -38,17 +45,19 @@ def get_data_from_day(day: str) -> pl.DataFrame:
 
     Parameters
     ----------
-        day : date
-            The day to get the data from.
+    day : date
+        The day whose data will be retrieved.
+
     Returns
     -------
-        A DataFrame.
+    polars.DataFrame
+        A DataFrame with the data from the given day.
     """
 
     result = root_ref.child(day).get()
     if result is None:
         return pl.DataFrame()
-    data = ord_dict_to_df(result)
+    data = ordered_dict_to_df(result)
 
     return data
 
@@ -59,17 +68,18 @@ def get_current_data() -> pl.DataFrame:
 
     Returns
     -------
+    polars.DataFrame
         A one-row DataFrame.
     """
-    today_data = get_data_from_day(date.today().strftime("%Y-%m-%d"))
+    today_data = get_data_from_day(str(date.today()))
     if today_data.shape[0] == 0:
         return today_data
     else:
-        today_data = today_data.sort("index").reverse()
+        today_data = today_data.sort("index", descending=True)
         current_time = datetime.now()
-        # the sensors take around 500ms to send the data, so 1 second is a safe threshold
+        # The sensors take around 500ms to send the data, so 1 second is a safe threshold
         threshold = timedelta(seconds=1)
-        if current_time - today_data["index"][0] < threshold:
+        if current_time - today_data[0, "index"] < threshold:
             return today_data.head(1)
         else:
             return pl.DataFrame()
@@ -81,6 +91,7 @@ def get_last_active_day_data() -> tuple[date, pl.DataFrame]:
 
     Returns
     -------
+    datetime.date, polars.DataFrame
         A tuple with the date and the DataFrame.
     """
     days = list(root_ref.get(shallow=True).keys())

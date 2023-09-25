@@ -1,12 +1,11 @@
-# Dash
-from dash import Dash, dcc, html
 import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output
-# Firebase
 import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import db
+
+from dash import Dash, dcc, html
+from dash.dependencies import Input, Output
 from datetime import datetime, timedelta, date, time
+from firebase_admin import db
+from firebase_admin import credentials
 
 # ===== Firebase ===== #
 cred = credentials.Certificate("serviceAccountKey.json")
@@ -67,7 +66,7 @@ app.layout = dbc.Row([
     Input("dataTypeDropdown", "value"),
     Input("sendDataInterval", "n_intervals")
 )
-def send_data_callback(n_clicks, dataType, n_intervals):
+def send_data_callback(n_clicks: int, dataType, n_intervals: int) -> str:
     if n_clicks is None or n_clicks % 2 == 0:
         return "", "Send Data", "btn btn-lg btn-primary"
     else:
@@ -81,7 +80,6 @@ def send_data_callback(n_clicks, dataType, n_intervals):
             data_types[dataType]
         )
         return f"Data {n_intervals} sent at {now.strftime('%H:%M:%S')}", "Stop Sending Data", "btn btn-lg btn-danger"
-    
 
 @app.callback(
     Output("dataToBeSentCard", "children"),

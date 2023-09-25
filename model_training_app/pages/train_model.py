@@ -1,9 +1,11 @@
 import dash
-from dash import dcc, html, Input, Output, State
-import login_manager
 import polars as pl
 
-dash.register_page(__name__, path='/train-model')
+from dash import dcc, html, Input, Output, State
+
+import login_manager
+
+dash.register_page(__name__, path="/train-model")
 
 seconds = 2
 interval = 1000
@@ -17,7 +19,7 @@ layout = html.Div([
     html.H4("Pose 1 out of 12", id="pose-text"),
     html.Img(src="/assets/pose1.png", style={"width": "50%"}),
     html.Br(),
-    html.Progress(id="progress", value='0', max=f'{seconds}000'),
+    html.Progress(id="progress", value="0", max=f"{seconds}000"),
     html.P(f"Stay in this pose for {seconds} seconds...", id="timer-text"),
     html.P("", id="instructions"),
     dcc.Interval(id="interval", interval=interval, n_intervals=0),
@@ -35,28 +37,28 @@ layout = html.Div([
     State("progress", "value"),
     prevent_initial_call=True,
 )
-def update_progress(n_intervals, progress):
+def update_progress(n_intervals: int, progress: str) -> tuple[bool, str, str]:
     global data, labels
 
     if int(progress) >= seconds * 1000:
         return False, progress, "Done!", "Get up before going to the next pose."
-    
+
     reading = login_manager.get_current_data()
 
-    if reading is None and progress == '0':
+    if reading is None and progress == "0":
         return True, progress, f"Stay in this pose for {seconds} seconds...", "You can start as soon as you're ready. The timer will start automatically when it detects you're sitting."
     elif reading is None:
         return True, progress, f"Timer stopped.", "The chair cannot detect you. Please sit down as shown in the picture."
     else:
-        # if it's the first reading, set data to be the reading
+        # If it's the first reading, set data to be the reading
         if data.shape[0] == 0:
             data = reading
             labels = pl.Series([str(pose)])
-        # else, append the reading to data
+        # Else, append the reading to data
         else:
             data = data.vstack(reading)
             labels = labels.append(pl.Series([str(pose)]))
-        return True, str(int(progress) + interval), f"Stay in this pose for {seconds - (int(progress) // 1000)} seconds...", ""
+        return True, str(int(progress) + interval), f"Stay in this pose for {seconds - (int(progress) // 1000)} seconds..."
 
 @dash.callback(
     Output("next-button", "disabled"),
@@ -68,21 +70,22 @@ def update_progress(n_intervals, progress):
     Input("next-button", "n_clicks"),
     prevent_initial_call=True,
 )
-def next_pose(n_clicks):
+def next_pose(n_clicks: int) -> tuple[bool, str, str, str, int, str]:
     global pose
 
     if n_clicks is None:
-        return True, '0', f"Stay in this pose for {seconds} seconds...", "Pose 1 out of 12", 0, ""
+        return True, "0", f"Stay in this pose for {seconds} seconds...", "Pose 1 out of 12", 0, ""
     else:
         pose += 1
         if pose > 12:
-            return True, '0', "", "Done!", 0, "You're done! You can now go back to the home page."
+            return True, "0", "", "Done!", 0, "You're done! You can now go back to the home page."
 
-        return (True, 
-                '0', 
-                f"Stay in this pose for {seconds} seconds...", 
-                f"Pose {pose} out of 12", 0, 
-                "You can start as soon as you're ready. The timer will start automatically when it detects you're sitting.")
+        return (True,
+                "0",
+                f"Stay in this pose for {seconds} seconds...",
+                f"Pose {pose} out of 12", 0,
+                "You can start as soon as you're ready."
+                "The timer will start automatically when it detects you're sitting.")
 
 @dash.callback(
     Output("train-button", "disabled"),
@@ -91,7 +94,7 @@ def next_pose(n_clicks):
     State("email", "value"),
     prevent_initial_call=True,
 )
-def train_model(n_clicks, email):
+def train_model(n_clicks: int, email: str) -> tuple[bool, str]:
     global data, labels
 
     if n_clicks is None:

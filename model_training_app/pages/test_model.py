@@ -1,13 +1,15 @@
 import dash
-from dash import dcc, html, Input, Output, State
-import login_manager
 import pickle
+
+from dash import dcc, html, Input, Output, State
+from typing import Optional
+
 import database_manager
-import polars as pl
+import login_manager
 
 model = None
 
-dash.register_page(__name__, path='/test-model', redirect_from=['/login'])
+dash.register_page(__name__, path="/test-model", redirect_from=["/login"])
 
 layout = html.Div([
     html.H3("Login"),
@@ -26,7 +28,7 @@ layout = html.Div([
     Output("login-button", "disabled"),
     Input("email", "value"),
 )
-def disable_login_button(email):
+def disable_login_button(email: Optional[str]) -> bool:
     return email is None or email == ""
 
 @dash.callback(
@@ -34,23 +36,25 @@ def disable_login_button(email):
     Input("login-button", "n_clicks"),
     State("email", "value"),
 )
-def login(n_clicks, email):
-    global model 
+def login(n_clicks: Optional[int], email: str) -> str:
+    global model
 
     if n_clicks is None:
         return ""
     user_id = login_manager.login(email)
+    if user_id is None:
+        return "Invalid email."
 
     with open(f"model_training_app/models/model_{user_id}.pkl", "rb") as f:
         model = pickle.load(f)
-    
+
     return f"Logged in as {email}."
 
 @dash.callback(
     Output("PredictionCardDiv", "children"),
     Input("interval", "n_intervals"),
 )
-def predict(n_intervals):
+def predict(n_intervals: int) -> html.Div:
     global model
 
     if model is None:
@@ -76,7 +80,7 @@ def predict(n_intervals):
     data = data.drop("index")
     data = data.rows(named=False)
     prediction = model.predict(data)
-    
+
     return html.Div(className="card text-white bg-primary mb-3", children=[
             html.Div(className="card-header", children="Model Prediction"),
             html.Div(className="card-body", children=[
@@ -84,4 +88,3 @@ def predict(n_intervals):
                 html.P(className="card-text", children="This is what your trained model predicted.")
             ])
         ], id="PredictionCard", style={"width":"100%"})
-

@@ -1,8 +1,11 @@
 import dash
+
 from dash import dcc, html
+from typing import Optional
+
 import login_manager
 
-dash.register_page(__name__, path='/create-account')
+dash.register_page(__name__, path="/create-account")
 
 layout = html.Div([
     html.H3("Create Account"),
@@ -30,8 +33,11 @@ layout = html.Div([
     dash.Input("password", "value"),
     dash.Input("confirm-password", "value"),
 )
-def disable_create_account_button(name, email, birthday, weight, password, confirm_password):
-    return name is None or email is None or birthday is None or weight is None or password is None or confirm_password is None or name == "" or email == "" or password == "" or confirm_password == "" or password != confirm_password
+def disable_create_account_button(name: str, email: str, birthday: str,
+                                  weight: str, password: str, confirm_password: str) -> bool:
+    return (name is None or email is None or birthday is None or weight is None or password is None
+            or confirm_password is None or name == "" or email == "" or password == ""
+            or confirm_password == "" or password != confirm_password)
 
 @dash.callback(
     dash.Output("continue-button", "disabled"),
@@ -43,7 +49,9 @@ def disable_create_account_button(name, email, birthday, weight, password, confi
     dash.State("password", "value"),
     dash.State("confirm-password", "value"),
 )
-def create_account(n_clicks, name, email, birthday, weight, password, confirm_password):
+def create_account(n_clicks: Optional[int], name: str, email: str, birthday: str,
+                   weight: str, password: str, confirm_password: str) -> bool:
+    """Returns True on successful account creation, False otherwise."""
     if n_clicks is None:
         return True
     data = {
