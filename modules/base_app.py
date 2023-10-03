@@ -1,7 +1,8 @@
-from dash import Dash
 import dash_bootstrap_components as dbc
 
-DEBUG_STATE = False
+from dash import Dash
+
+DEBUG_STATE = True
 
 external_stylesheets = [
     dbc.themes.BOOTSTRAP,
@@ -9,4 +10,4 @@ external_stylesheets = [
 ]
 
 app = Dash(__name__, external_stylesheets=external_stylesheets, update_title=None, suppress_callback_exceptions=True)
-app.title = 'SmartChair'
+app.title = "SmartChair"

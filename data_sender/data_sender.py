@@ -1,18 +1,17 @@
-# Dash
-from dash import Dash, dcc, html
 import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output
-# Firebase
 import firebase_admin
-from firebase_admin import credentials
+
+from dash import Dash, dcc, html
+from dash.dependencies import Input, Output
+from datetime import datetime, date
 from firebase_admin import db
-from datetime import datetime, timedelta, date, time
+from firebase_admin import credentials
 
 # ===== Firebase ===== #
 cred = credentials.Certificate("serviceAccountKey.json")
-firebase_admin = firebase_admin.initialize_app(cred, {'databaseURL': 'https://friendly-bazaar-334818-default-rtdb.firebaseio.com'})
+firebase_admin = firebase_admin.initialize_app(cred, {"databaseURL": "https://friendly-bazaar-334818-default-rtdb.firebaseio.com"})
 
-root_ref = db.reference('/yet_another_test/')
+root_ref = db.reference("/yet_another_test/")
 
 # ===== Data Types ===== #
 data_types = {
@@ -40,13 +39,13 @@ app.layout = dbc.Row([
         dcc.Dropdown(
             id="dataTypeDropdown",
             options=[
-                {'label': 'Correct Posture', 'value': 'correct_posture'},
-                {'label': 'Leaning Forward', 'value': 'leaning_forward'},
-                {'label': 'Relaxed Posture', 'value': 'relaxed_posture'},
-                {'label': 'Unbalanced Posture', 'value': 'unbalanced_posture'},
-                {'label': 'Not Sitting', 'value': 'not_sitting'}
+                {"label": "Correct Posture", "value": "correct_posture"},
+                {"label": "Leaning Forward", "value": "leaning_forward"},
+                {"label": "Relaxed Posture", "value": "relaxed_posture"},
+                {"label": "Unbalanced Posture", "value": "unbalanced_posture"},
+                {"label": "Not Sitting", "value": "not_sitting"}
             ],
-            value='correct_posture', style={"width":"100%"}
+            value="correct_posture", style={"width":"100%"}
         ),
         html.Br(),
         html.Div(className="card text-white bg-primary mb-3", children=[
@@ -67,7 +66,7 @@ app.layout = dbc.Row([
     Input("dataTypeDropdown", "value"),
     Input("sendDataInterval", "n_intervals")
 )
-def send_data_callback(n_clicks, dataType, n_intervals):
+def send_data_callback(n_clicks: int, dataType: str, n_intervals: int) -> str:
     if n_clicks is None or n_clicks % 2 == 0:
         return "", "Send Data", "btn btn-lg btn-primary"
     else:
@@ -76,7 +75,7 @@ def send_data_callback(n_clicks, dataType, n_intervals):
         timestamp = datetime.timestamp(now)
         # Send data
         date_ = date.today().strftime("%Y-%m-%d")
-        timestamp = str(timestamp).replace('.', '')[:13]
+        timestamp = str(timestamp).replace(".", "")[:13]
         root_ref.child(date_).child(timestamp).set(
             data_types[dataType]
         )
@@ -86,7 +85,7 @@ def send_data_callback(n_clicks, dataType, n_intervals):
     Output("dataToBeSentCard", "children"),
     Input("dataTypeDropdown", "value")
 )
-def update_data_to_be_sent_card(dataType):
+def update_data_to_be_sent_card(dataType: str) -> list[html.Div]:
     match dataType:
         case "correct_posture":
             return [

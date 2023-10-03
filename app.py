@@ -1,9 +1,8 @@
 import dash
-from dash import Dash
-from dash import dcc, html
 import dash_bootstrap_components as dbc
+
+from dash import dcc, html
 from dash.dependencies import Input, Output
-import polars as pl
 
 from modules import day_analysis, posture_monitoring
 from modules.base_app import app, DEBUG_STATE
@@ -49,9 +48,9 @@ app.layout = html.Div([
         ]),
 ])
 
-@app.callback(Output('tabContent', 'children'),
-              Input('tabsSelector', 'value'))
-def render_content(tab):
+@app.callback(Output("tabContent", "children"),
+              Input("tabsSelector", "value"))
+def render_content(tab: str) -> html.Div | None:
     match tab:
         case "General View":
             return general_view.layout
@@ -59,6 +58,7 @@ def render_content(tab):
             return realtime_data.layout
         case "Time Selector":
             return time_selector.layout
+    return None
 
-if __name__ == '__main__':
-    app.run_server(debug=True, port=8000)
+if __name__ == "__main__":
+    app.run_server(debug=DEBUG_STATE, port=8000)

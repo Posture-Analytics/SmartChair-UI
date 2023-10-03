@@ -1,55 +1,96 @@
-from dash import dcc, html
 import dash_bootstrap_components as dbc
+import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
-from plotly.subplots import make_subplots
-from datetime import datetime
-import numpy as np
 import polars as pl
-import pandas as pd
+
+from dash import dcc, html
+
 from modules import predictor
 
 # ===== Helper functions ===== #
-def create_posture_quality_graph(state):
-    state = np.array(state)
-    value_counts = np.unique(state, return_counts=True)
-    fig = px.pie(values=value_counts[1], names=value_counts[0], color=value_counts[0])
+def create_posture_quality_graph(states: np.ndarray) -> go.Figure:
+    """
+    Creates a pie chart with the percentage of time spent in each posture.
+
+    Parameters
+    ----------
+    states : numpy.ndarray
+        Array of strings of the state names.
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        The pie chart.
+    """
+    names, counts = np.unique(states, return_counts=True)
+    fig = px.pie(values=counts, names=names, color=names)
     fig.update_layout(title_text="Percentage of time spent in each posture")
 
     return fig
 
-def create_time_seated_graph(state, data):
-    state = pd.Series(state)
+def create_time_seated_graph(states: np.ndarray, data: pl.DataFrame) -> go.Figure:
+    """
+    Creates a histogram with the time spent seated over time. The DataFrame will
+    be converted to a pandas DataFrame before plotting for compatibility reasons.
+
+    Parameters
+    ----------
+    states : numpy.ndarray
+        Array of strings of the state names.
+    data : polars.DataFrame
+        A DataFrame containing the pressure values.
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        The histogram.
+    """
     data_pd = data.to_pandas()
-    data_pd['state'] = state
-    fig = px.histogram(data_pd, x="index", color="state")
+    data_pd["states"] = states
+    fig = px.histogram(data_pd, x="index", color="states")
     fig.update_layout(title_text="Posture balance over time")
 
     return fig
 
-def create_posture_balance_graph(state, data):
+def create_posture_balance_graph(state: np.ndarray, data: pl.DataFrame) -> go.Figure:
+    """
+    Creates a graph with the horizontal and vertical balance.
+
+    Parameters
+    ----------
+    state : numpy.ndarray
+        Array of strings of the state names.
+    data : polars.DataFrame
+        A DataFrame containing the pressure values.
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        The graph.
+    """
     MARKER_SIZE = 0.3
     fig = go.Figure()
 
-    # calculate horizontal balance
-    sum = data.sum()
+    # Calculate horizontal balance
+    total = data.sum()
 
     right = 0
     left = 0
     for i in range(12):
         if i % 2 == 0:
-            right += sum[f"p{str(i).zfill(2)}"][0]
+            right += total[f"p{str(i).zfill(2)}"][0]
         else:
-            left += sum[f"p{str(i).zfill(2)}"][0]
+            left += total[f"p{str(i).zfill(2)}"][0]
 
     boundary = max(right, left)
     h_balance = (right - left) / boundary
 
     # calculate vertical balance
-    counts = np.unique(state, return_counts=True)
-    forward = counts[1][counts[0] == 'Leaning Forward']
-    backward = counts[1][counts[0] == 'Leaning Backward']
-    neutral = counts[1][counts[0] == 'Sitting Correctly']
+    names, counts = np.unique(state, return_counts=True)
+    forward = counts[names == "Leaning Forward"]
+    backward = counts[names == "Leaning Backward"]
+    neutral = counts[names == "Sitting Correctly"]
 
     if len(forward) == 0:
         forward = 0
@@ -67,90 +108,99 @@ def create_posture_balance_graph(state, data):
     boundary = max(forward, backward, neutral)
     v_balance = (forward - backward) / boundary
 
-    # horizontal balance
-    # line
+    # Horizontal balance
+    # Line
     fig.add_shape(type="line",
-    x0=-2, y0=0, x1=2, y1=0,
-    line=dict(color="LightSlateGray", width=3)
+        x0=-2, y0=0, x1=2, y1=0,
+        line=dict(color="LightSlateGray", width=3)
     )
-    # middle line
+    # Middle line
     fig.add_shape(type="line",
-    x0= 0, y0=-MARKER_SIZE/2,
-    x1= 0, y1= MARKER_SIZE/2,
-    line=dict(color="LightSlateGray", width=3)
+        x0= 0, y0=-MARKER_SIZE / 2,
+        x1= 0, y1= MARKER_SIZE / 2,
+        line=dict(color="LightSlateGray", width=3)
     )
-    # marker
+    # Marker
     fig.add_shape(type="circle",
-    x0= h_balance * 2 - MARKER_SIZE/2, y0=-MARKER_SIZE/2,
-    x1= h_balance * 2 + MARKER_SIZE/2, y1= MARKER_SIZE/2,
-    fillcolor="DarkSlateGray", line_color="DarkSlateGray")
-    # text
-    fig.add_annotation(
-    x=0, y=0.5,
-    text="Horizontal Balance",
-    showarrow=False,
-    align="center"
+        x0= h_balance * 2 - MARKER_SIZE / 2, y0=-MARKER_SIZE / 2,
+        x1= h_balance * 2 + MARKER_SIZE / 2, y1= MARKER_SIZE / 2,
+        fillcolor="DarkSlateGray", line_color="DarkSlateGray"
     )
-    # text value
+    # Ttext
     fig.add_annotation(
-    x=0, y=-0.5,
-    text= str(round(h_balance, 2)),
-    showarrow=False,
-    align="center"
+        x=0, y=0.5,
+        text="Horizontal Balance",
+        showarrow=False,
+        align="center"
+    )
+    # Text value
+    fig.add_annotation(
+        x=0, y=-0.5,
+        text= str(round(h_balance, 2)),
+        showarrow=False,
+        align="center"
     )
 
-    # vertical balance
-    # line
+    # Vertical balance
+    # Line
     fig.add_shape(type="line",
-    x0=4, y0=-1, x1=4, y1=1,
-    line=dict(color="LightSlateGray",width=3)
-    )  
-    # middle line
-    fig.add_shape(type="line",
-    x0=4 - MARKER_SIZE/2, y0=0, x1=4 + MARKER_SIZE/2, y1=0,
-    line=dict(color="LightSlateGray",width=3)
+        x0=4, y0=-1, x1=4, y1=1,
+        line=dict(color="LightSlateGray",width=3)
     )
-    # marker
+    # Middle line
+    fig.add_shape(type="line",
+        x0=4 - MARKER_SIZE / 2, y0=0, x1=4 + MARKER_SIZE / 2, y1=0,
+        line=dict(color="LightSlateGray",width=3)
+    )
+    # Mmarker
     fig.add_shape(type="circle",
-    x0=4 - MARKER_SIZE/2, y0= v_balance - MARKER_SIZE/2,
-    x1=4 + MARKER_SIZE/2, y1= v_balance + MARKER_SIZE/2,
-    fillcolor="DarkSlateGray", line_color="DarkSlateGray")
-    # text
-    fig.add_annotation(
-    x=4, y=1.5,
-    text="Vertical Balance",
-    showarrow=False,
-    align="center"
+        x0=4 - MARKER_SIZE / 2, y0= v_balance - MARKER_SIZE / 2,
+        x1=4 + MARKER_SIZE / 2, y1= v_balance + MARKER_SIZE / 2,
+        fillcolor="DarkSlateGray", line_color="DarkSlateGray"
     )
-    # text value
+    # Text
     fig.add_annotation(
-    x=4, y=-1.5,
-    text= str(round(v_balance, 2)),
-    showarrow=False,
-    align="center"
+        x=4, y=1.5,
+        text="Vertical Balance",
+        showarrow=False,
+        align="center"
+    )
+    # Text value
+    fig.add_annotation(
+        x=4, y=-1.5,
+        text= str(round(v_balance, 2)),
+        showarrow=False,
+        align="center"
     )
 
-    # update layout
+    # Update layout
     fig.update_layout(
-    title="Posture Balance",
-    xaxis_range=[-4, 8],
-    yaxis_range=[-2, 2],
-    width=800,
-    height=400,
-    template="plotly_white",
-    xaxis_showgrid=False,
-    yaxis_showgrid=False,
-    xaxis_visible=False,
-    yaxis_visible=False,
+        title="Posture Balance",
+        xaxis_range=[-4, 8],
+        yaxis_range=[-2, 2],
+        template="plotly_white",
+        xaxis_showgrid=False,
+        yaxis_showgrid=False,
+        xaxis_visible=False,
+        yaxis_visible=False,
     )
 
     return fig
 
-def create_graphs():
+def create_graphs() -> tuple[str, go.Figure, go.Figure, go.Figure]:
+    """
+    Helper function to create all the graphs.
+
+    Returns
+    -------
+    tuple[str, plotly.graph_objects.Figure, ...]
+        A tuple with the day, the posture quality graph, the posture balance graph
+        and the time seated graph.
+    """
     day, state, data = predictor.get_last_active_day_data()
     posture_quality_graph = create_posture_quality_graph(state)
-    time_seated_graph = create_time_seated_graph(state, data)
     posture_balance_graph = create_posture_balance_graph(state, data)
+    time_seated_graph = create_time_seated_graph(state, data)
 
     day = day.strftime("%d/%m")
     return day, posture_quality_graph, posture_balance_graph, time_seated_graph
@@ -172,8 +222,9 @@ layout = html.Div([
             html.Br(),
             html.H2("Posture Quality"),
             dcc.Graph(id="postureQualityGraph", figure=posture_quality_graph),
+            html.Br(),
             dcc.Graph(id="postureBalanceGraph", figure=posture_balance_graph),
-        ], width=8, style={"textAlign": "center", "align-content": "center"}),
+        ], width=8, style={"textAlign": "center", "align-content": "center", "height": "50%"}),
     ]),
 ])
 

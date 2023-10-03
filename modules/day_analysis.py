@@ -1,11 +1,10 @@
-from dash import dcc, html
 import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output
+import pandas as pd
+
+from dash import dcc, html
+
 from modules.base_app import app, DEBUG_STATE
 from modules import database_manager, predictor
-import polars as pl
-import pandas as pd
-import numpy as np
 
 model = predictor.get_model()
 
@@ -13,7 +12,7 @@ model = predictor.get_model()
 layout = dbc.Row([
         # Posture Evaluation
         dbc.Col([
-            dcc.Markdown("At day **26/04**, your posture was:", id="dateText"),
+            dcc.Markdown("On the day **26/04**, your posture was:", id="dateText"),
             html.Div("Good.", className="appear", id="postureText"),
             html.Div("Or 74% correct.", className="appear", id="percentageText"),
             dbc.Row([
@@ -24,11 +23,11 @@ layout = dbc.Row([
         # Alerts
         dbc.Col(class_name="panel", children=[
             html.Div("⚠ Alerts:", className="appear", id="alertsTitle"),
-            dcc.Markdown("You stayed seated for more than **2 hours**.", className="appear", id="alertsBody"),
+            dcc.Markdown("You remained sitting for more than **2 hours**.", className="appear", id="alertsBody"),
         ]),
     ])
 
-def make_layout(day, posture_quality, percent, tip, alerts):
+def make_layout(day: str, posture_quality: str, percent: int, tip: str, alerts: list[str]) -> dbc.Row:
     # Alerts
     alerts_list = [html.Div("⚠ Alerts:", className="appear", id="alertsTitle")]
     for alert in alerts:
@@ -37,7 +36,7 @@ def make_layout(day, posture_quality, percent, tip, alerts):
         alerts_list.append(dcc.Markdown("*No alerts.*", className="appear", id="alertsBody"))
     return dbc.Row([
         dbc.Col([
-            dcc.Markdown(f"At day **{day}**, your posture was:", id="dateText"),
+            dcc.Markdown(f"On the day **{day}**, your posture was:", id="dateText"),
             html.Div(posture_quality, className="appear", id="postureText"),
             html.Div(f"Or {percent}% correct.", className="appear", id="percentageText"),
             dbc.Row([
@@ -47,16 +46,15 @@ def make_layout(day, posture_quality, percent, tip, alerts):
         dbc.Col(class_name="panel", children=alerts_list),
     ])
 
-def get_layout():
+def get_layout() -> dbc.Row:
     last_day, last_day_data = database_manager.get_last_active_day_data()
 
     day = last_day.strftime("%d/%m")
 
     last_day_data = last_day_data.drop("index")
     evaluated_postures = model.predict(last_day_data.rows(named=False))
-    evaluated_postures = pd.Series(evaluated_postures)
     try:
-        percent = int(evaluated_postures.value_counts(normalize=True)["Sitting Correctly"] * 100)
+        percent = int((evaluated_postures == "Sitting Correctly").sum() / len(evaluated_postures) * 100)
         if percent < 50:
             posture_quality = "Bad."
             tip = "Tip: Standing up every 50 minutes improves blood circulation in the lower limbs."
