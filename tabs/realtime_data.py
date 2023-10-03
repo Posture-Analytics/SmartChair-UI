@@ -3,44 +3,18 @@ from dash import dcc, html, Input, Output
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import plotly.express as px
-from plotly.subplots import make_subplots
 import numpy as np
 import datetime
 from modules import predictor
-from modules.z_generator import points, is_back_point, generate_z
 from modules.base_app import app
 
 # ===== Low RAM mode ===== #
-LOWRAM = True
+LOWRAM = False
 
 # ===== Variables ===== #
 data_history = {}
 
 # ===== Helper functions ===== #
-def create_contour_graph(data) -> go.Figure:
-    """
-    Creates a figure with two heatmaps.
-    """
-    z = generate_z(data)
-    label = dict(font_size=14)
-    contours = dict(start=0, end=4608, showlines= False)
-    template = 'Value: %{z:.2f}<extra></extra>'
-
-    fig = make_subplots(rows=1, cols=2, subplot_titles=('Seat', 'Backrest'))
-    fig.add_trace(go.Contour(z=z[0], connectgaps=True, contours=contours, hoverlabel=label,
-                                colorscale='Blues', hovertemplate=template), row=1, col=1)
-    fig.add_trace(go.Contour(z=z[1], connectgaps=True, contours=contours, hoverlabel=label,
-                                colorscale='Blues', hovertemplate=template), row=1, col=2)
-
-    fig.update_xaxes(showticklabels=False)
-    fig.update_yaxes(showticklabels=False)
-
-    for key in points:
-        fig.add_annotation(x=points[key][1], y=points[key][0], text=key, showarrow=False, font=dict(size=12),
-                           row=1, col=1 + is_back_point(key))
-    
-    return fig
-
 def create_unbalance_graph(data) -> go.Figure:
     """
     Quantifies how assymetric the seat and backrest are.
@@ -87,8 +61,7 @@ def create_line_graph(data) -> go.Figure:
     Creates a line graph with the pressure data
     along the time.
     """
-    if LOWRAM:
-        return None
+    limit = 50
     
     # If there's new data
     if data.shape[0] > 0:
@@ -100,6 +73,11 @@ def create_line_graph(data) -> go.Figure:
         for key in data.columns:
             data_history[key].append(data[key][0])
         data_history['time'].append(datetime.datetime.now())
+        
+        # If the history is too long, remove the first elements
+        if len(data_history['time']) > limit:
+            for key in data_history.keys():
+                data_history[key] = data_history[key].pop(0)
 
     # Create the figure
     fig = go.Figure()
@@ -121,17 +99,17 @@ layout = html.Div([
     dbc.Row(justify="center", children=[
         dbc.Col([
             html.H2("Real Time Data", className="tabTitle"),
-            dcc.Graph(id="realTimeContourGraph"),
+            html.P("Debug text", id="debugText", className="debugText"),
             dcc.Graph(id="realTimeUnbalanceGraph"),
             dcc.Graph(id="realTimeBarGraph"),
             dcc.Graph(id="HistoryLineGraph"),
-            dcc.Interval(id='realTimeGraphsInterval', interval=500, n_intervals=0)
+            dcc.Interval(id='realTimeGraphsInterval', interval=2000, n_intervals=0)
         ], width=8, style={"textAlign": "center", "align-content": "center"}),
     ]),
 ])
 
 # ===== Callbacks ===== #
-@app.callback(Output('realTimeContourGraph', 'figure'),
+@app.callback(Output('debugText', 'children'),
               Output('realTimeUnbalanceGraph', 'figure'),
               Output('realTimeBarGraph', 'figure'),
               Output('HistoryLineGraph', 'figure'),
@@ -140,11 +118,10 @@ def update_real_time_graphs(n):
     state, data = predictor.get_current_data()
     
     if data.shape[0] == 0:
-        return go.Figure(), go.Figure(), go.Figure(), create_line_graph(data)
+        return state, go.Figure(), go.Figure(), create_line_graph(data)
 
-    contour_graph = create_contour_graph(data)
     unbalance_graph = create_unbalance_graph(data)
     bar_graph = create_bar_graph(data)
     line_graph = create_line_graph(data)
 
-    return contour_graph, unbalance_graph, bar_graph, line_graph
+    return state, unbalance_graph, bar_graph, line_graph

@@ -66,6 +66,7 @@ def get_current_data() -> pl.DataFrame:
         return today_data
     else:
         today_data = today_data.sort("index").reverse()
+        return today_data.head(1)
         current_time = datetime.now()
         # the sensors take around 500ms to send the data, so 1 second is a safe threshold
         threshold = timedelta(seconds=1)

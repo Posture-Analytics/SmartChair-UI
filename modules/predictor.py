@@ -1,8 +1,6 @@
 from modules import database_manager
-from modules.base_app import app, DEBUG_STATE
 import polars as pl
 import pickle
-import random
 
 # ===== Load model ===== #
 with open("model.pkl", "rb") as f:
