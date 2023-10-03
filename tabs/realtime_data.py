@@ -11,7 +11,7 @@ from modules.z_generator import points, is_back_point, generate_z
 from modules.base_app import app
 
 # ===== Low RAM mode ===== #
-LOWRAM = False
+LOWRAM = True
 
 # ===== Variables ===== #
 data_history = {}

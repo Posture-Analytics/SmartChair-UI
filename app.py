@@ -61,4 +61,4 @@ def render_content(tab):
             return time_selector.layout
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8000)
+    app.run_server(debug=DEBUG_STATE, port=8000)
