@@ -16,8 +16,8 @@ root_ref = db.reference("/yet_another_test/")
 # ===== Data Types ===== #
 data_types = {
     "correct_posture": [1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500],
-    "leaning_forward": [0, 0, 0, 0, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000],
-    "relaxed_posture": [3000, 3000, 3000, 3000, 0, 0, 0, 0, 3000, 3000, 3000, 3000],
+    "leaning_forward": [0, 0, 0, 0, 0, 0, 3000, 3000, 1500, 1500, 800, 800],
+    "leaning_backward": [3000, 3000, 3000, 3000, 0, 0, 0, 0, 3000, 3000, 3000, 3000],
     "unbalanced_posture": [3000, 0, 3000, 0, 3000, 0, 3000, 0, 3000, 0, 3000, 0],
     "not_sitting": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 }
@@ -103,12 +103,12 @@ def update_data_to_be_sent_card(dataType: str) -> list[html.Div]:
                     html.P(className="card-text", children=[str(data_types["leaning_forward"])])
                 ])
             ]
-        case "relaxed_posture":
+        case "leaning_backward":
             return [
                 html.Div(className="card-header", children=["Data to be sent"]),
                 html.Div(className="card-body", children=[
-                    html.H5(className="card-title", children=["Relaxed Posture"]),
-                    html.P(className="card-text", children=[str(data_types["relaxed_posture"])])
+                    html.H5(className="card-title", children=["Leaning Backward"]),
+                    html.P(className="card-text", children=[str(data_types["leaning_backward"])])
                 ])
             ]
         case "unbalanced_posture":
