@@ -1,0 +1,149 @@
+body {
+    background-color: rgb(243, 243, 237);
+    margin: 0;
+    padding: 0;
+}
+
+#sidebar{
+    width:20%;
+    float:left;
+    margin-top: 40px;
+    margin-left: 8%;
+    margin-right: 10px;
+    }
+#content{
+    width: 64%;
+    float:left;
+    margin-top: 60px;
+    }
+
+header{
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    height: 60px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    font-family: sans-serif;
+    color: azure;
+    justify-content: space-between;
+    background-color: rgb(30, 30, 30);
+    /* grid-area: header; */
+}
+
+h1{
+    font-size: 26px;
+}
+
+#fgv{
+    height: 100%;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+input:focus {
+    box-shadow: 0 0 0 0;
+    outline: 0;
+}
+
+#searchDiv{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+    margin-left: 5%;
+    margin-right: 5%;
+    width: 50%;
+    background-color: white;
+    border-radius: 2px;
+    padding: 3px;
+}
+
+#lupa{
+    width: 25px;
+    background: none;
+    cursor: pointer;
+    border: none;  
+    background-color: none;
+}
+
+#search{
+    font-size: larger;
+    font-family: sans-serif;
+    height: 25px;
+    width: 90%;
+    border: none;
+    background: transparent;
+    box-sizing:content-box;
+    
+}
+
+#app{
+    /* grid-template-columns: 100px aut; */
+    background-color: rgb(247, 247, 227);
+    margin-top: 20px;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+.infoMark{
+    margin: 4px;
+    font-size: 15px;
+}
+
+#leftColumn{
+
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+h2{
+    margin-top: 0%;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 20px;
+}
+
+.opt{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.clear{
+    display: block;
+    background-color: black;
+    color: white;
+    width: 13em;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+.docs{
+    background-color: white;
+    margin-top: 40px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 40px;
+    padding: 4px;
+    border-color: silver;
+    border-radius: 4px;
+
+}
+
+.marked{
+    background-color: white;
+    margin: 4px;
+    padding: 2px;
+    display: inline-block;
+}
+
+.send{
+    background-color: rgb(0, 62, 126);
+    color: white;
+    margin-top: 30px;
+    width: 13em;
+    padding-left: 1em;
+    padding-right: 1em;
+}

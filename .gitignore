@@ -2,3 +2,4 @@ serviceAccountKey.json
 **/__pycache__
 *.csv
 *.ipynb
+**/app
