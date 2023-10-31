@@ -17,7 +17,7 @@ def static_file(path):
 @app.route("/data")
 def data():
     # obter os dados da consulta
-    data = last_day()
+    data = get_data_from_day("2023-10-31")
     # converter os dados em JSON
     data_json = jsonify(data)
     # retornar os dados em JSON como resposta

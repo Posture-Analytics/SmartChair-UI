@@ -1,6 +1,7 @@
 # import the firebase_admin module
 import firebase_admin
 from firebase_admin import credentials
+import base64_decoder as b64d
 
 # check if the app has already been initialized
 if not firebase_admin._apps:
@@ -11,10 +12,18 @@ if not firebase_admin._apps:
 # create a reference to the Firebase Realtime Database
 from firebase_admin import db
 
-root_ref = db.reference('sensor_readings_NEW_STRUCTURE')
+# create a reference to the path that contains the data
+root_ref = db.reference('fake_data_base64')
 
-# ex P2224;2073;0;198;1478;1062;270;277;553;350;221;657;"
-def last_day():
-    last = root_ref.order_by_key().limit_to_last(1).get()
-    print(last.values())
-    return list(last.values())
+
+def get_data_from_day(day: str) -> dict:
+    """
+    Get the data from a specific day
+    
+    :param day: the day to get the data from
+    :return: the data from the day
+    """
+    data_base64 = root_ref.child(day).get()
+    data = {key: b64d.decode_base64(value) for key, value in data_base64.items()}
+
+    return data
