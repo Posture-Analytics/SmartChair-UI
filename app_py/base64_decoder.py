@@ -1,5 +1,5 @@
 """
-Given an string in base64, decode it following this steps:
+Given a string in base64, decode it following this steps:
 
 1. Make sure the string has a valid length (multiple of 2)
 2. Read the pairs of characters
