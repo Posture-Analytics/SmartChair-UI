@@ -6,7 +6,7 @@ import polars as pl
 
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from plotly.subplots import make_subplots
 from typing import Optional
 
@@ -159,7 +159,7 @@ def calculate_time_seated_plot(granularity: int = 10, threshold: int = 500) -> g
         interval_data = []
 
         # Pass through all data points
-        while times[last_data_idx] < (interval_start + datetime.timedelta(seconds=granularity)):
+        while times[last_data_idx] < (interval_start + timedelta(seconds=granularity)):
             interval_data.append(data[last_data_idx].mean(axis=1)[0])
             last_data_idx += 1
             if last_data_idx >= len(data):
@@ -179,18 +179,18 @@ def calculate_time_seated_plot(granularity: int = 10, threshold: int = 500) -> g
         # Join the intervals if they are the same
         if len(intervals_classified) > 0 and intervals_classified[-1]["class"] == interval_class:
             # Update the end of the interval
-            intervals_classified[-1]["end"] = interval_start + datetime.timedelta(seconds=granularity)
+            intervals_classified[-1]["end"] = interval_start + timedelta(seconds=granularity)
 
         # If the interval is different, add it to the list
         else:
             intervals_classified.append({
                 "class": interval_class,
                 "start": interval_start,
-                "end": interval_start + datetime.timedelta(seconds=granularity)
+                "end": interval_start + timedelta(seconds=granularity)
             })
 
         # Move to the next interval
-        interval_start += datetime.timedelta(seconds=granularity)
+        interval_start += timedelta(seconds=granularity)
 
     intervals_classified = pl.DataFrame(intervals_classified)
 
@@ -219,7 +219,7 @@ def calculate_line_plot() -> go.Figure:
 
     if not is_processed:
         times = data["index"]
-        seconds = datetime.timedelta(seconds=30)
+        seconds = timedelta(seconds=30)
         # Find the indices of sudden jumps in time
         temp = np.abs(times[:-1] - times[1:]) > seconds
         bad = temp.arg_true() + 1
@@ -229,7 +229,7 @@ def calculate_line_plot() -> go.Figure:
         # more readable and continuous
         if len(bad) > 0:
             is_processed = True
-            epsilon = datetime.timedelta(milliseconds=1)
+            epsilon = timedelta(milliseconds=1)
             extension = []
 
             for idx in bad:
@@ -327,7 +327,8 @@ layout = html.Div([
             Output("timeSeatedGraph", "figure"),
             Output("lineGraph", "figure"),
             State("dateSelector", "date"),
-            Input("dateSelectorButton", "n_clicks"))
+            Input("dateSelectorButton", "n_clicks"),
+            prevent_initial_call=True)
 def update_date_text(date: datetime, n_clicks: int) -> tuple[str, go.Figure, go.Figure]:
     if n_clicks is not None:
         global data
