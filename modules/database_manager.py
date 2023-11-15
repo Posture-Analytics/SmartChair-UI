@@ -1,5 +1,6 @@
 import firebase_admin
 import polars as pl
+from modules import base64_decoder as b64d
 
 from datetime import datetime, timedelta, date, time
 from firebase_admin import credentials
@@ -15,7 +16,7 @@ firebase_admin = firebase_admin.initialize_app(
 # The DataFrame doesn't accept the dtype int in the constructor, for some reason
 schema = {f"p{i:02}": pl.Int32 for i in range(12)}
 
-root_ref = db.reference("/yet_another_test/")
+root_ref = db.reference("fake_data_base64")
 
 def get_list_of_days() -> list[str]:
     """
@@ -41,8 +42,12 @@ def ordered_dict_to_df(data: dict) -> pl.DataFrame:
     polars.DataFrame
     """
     global schema
+    # Decode the base64 strings
+    data = {key: b64d.decode_base64(value) for key, value in data.items()}
     # Convert the integer keys to the unix time (seconds), then datetime objects
     index = [datetime.fromtimestamp(float(key) / 1000) for key in data.keys()]
+    # Get only the pressure values
+    data = {key: value["P"] for key, value in data.items()}
     # Convert the data to a DataFrame
     result = pl.DataFrame(list(data.values()), schema=schema).with_columns([
         pl.Series(name="index", values=index),
