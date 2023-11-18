@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- <title>Loggin</title> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='../css/login.css') }}">
+    <link rel="stylesheet" href="public/login.css"/>
+
+
+<body>
+
+    <div id="send">
+
+    <span id="submit"><h1>Register new user</h1></span>
+    <form action="/submit" id="submit" method="post">
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="date" name="birthday" placeholder="Birthday" required>
+        <input type="text" name="height" placeholder="Height (cm)" required>
+        <input type="text" name='weight' placeholder="Weight (kg)" required>
+        <input type="submit" value="Register">
+   
+    </form>
+    </div>
+    
+</body>
+
+</html>
