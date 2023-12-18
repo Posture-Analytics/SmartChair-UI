@@ -11,15 +11,15 @@ from firebase_admin import credentials
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin = firebase_admin.initialize_app(cred, {"databaseURL": "https://friendly-bazaar-334818-default-rtdb.firebaseio.com"})
 
-root_ref = db.reference("/yet_another_test/")
+root_ref = db.reference("/fake_data_base64/")
 
 # ===== Data Types ===== #
 data_types = {
-    "correct_posture": [1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500],
-    "leaning_forward": [0, 0, 0, 0, 0, 0, 3000, 3000, 1500, 1500, 800, 800],
-    "leaning_backward": [3000, 3000, 3000, 3000, 0, 0, 0, 0, 3000, 3000, 3000, 3000],
-    "unbalanced_posture": [3000, 0, 3000, 0, 3000, 0, 3000, 0, 3000, 0, 3000, 0],
-    "not_sitting": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    "correct_posture": "~PZAZAZAZAZAZAZAZAZAZAZAZA",
+    "leaning_forward": "~PAAAAAAAAAAAA0A0AZAZANANA",
+    "leaning_backward": "~P0A0A0A0AAAAAAAAA0A0A0A0A",
+    "unbalanced_posture": "~P0AAA0AAA0AAA0AAA0AAA0AAA",
+    "not_sitting": "~PAAAAAAAAAAAAAAAAAAAAAAAA"
 }
 
 # ===== App ===== #
